@@ -8,6 +8,19 @@
 
 # version="1.3"
 
+
+# issues/19
+
+which ar               || exit
+which tar              || exit
+which curl             || exit
+which xbps-install     || exit
+which xbps-remove      || exit
+which xz               || exit
+which xbps-query       || exit
+
+
+
 clear
 
 echo -e "$(basename "$0"): `grep '^# version' "$0" | tail -1 | cut -d = -f 2 | tr -d \# |  sed 's/"//g'` \n"

@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # AUTOR: Fernando Souza - https://www.youtube.com/@fernandosuporte/
-# Versão 0.1: 25/09/2023 as20:26
+# Versão 0.1: 25/09/2023 as 20:26
 #
 # xdeb: Um utilitário simples para converter pacotes deb(ian) em pacotes xbps
 #

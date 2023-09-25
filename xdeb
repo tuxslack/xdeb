@@ -1,5 +1,15 @@
 #!/bin/sh
 
+# Fernando Souza - https://www.youtube.com/@fernandosuporte/
+#
+# 25/09/2023 - Adicionando a variável versão ao script.
+#              Uso: xdeb -v
+
+# Versão do script
+
+Version="1.3"
+
+
 # Directories and filenames
 XDEB_PKGROOT="$(realpath "${XDEB_PKGROOT-${PWD}}")"
 XDEB_WORKDIR="${XDEB_PKGROOT}/workdir"
@@ -109,6 +119,7 @@ usage: xdeb [-S] [-d] [-Sd] [--deps] ... FILE
   -m                         # Add the -32bit suffix
   -i                         # Ignore file conflicts
   -f                         # Attempt to automatically fix common conflicts
+  -v                         # Version  
   --deps=...                 # Add manual dependencies
   --arch=...                 # Add an arch for the package to run on
   --revision=... | --rev=... # Set package revision. Alternative to -r
@@ -166,6 +177,7 @@ while [ "${#}" != "0" ]; do
 			m*) XDEB_SUFFIX="-32bit";;
 			i*) XDEB_OPT_WARN_CONFLICT=false;;
 			f*) XDEB_OPT_FIX_CONFLICT=true;;
+			v*) version=true;;
 			*) log_crit "invalid option -- '${flag%"${flag#?}"}'"; usage 1;;
 		esac
 
@@ -251,6 +263,17 @@ XDEB_DEPENDENCIES="${XDEB_DEPENDENCIES%* }"
 	fix_conflict lib64 usr
 	fix_conflict sbin  usr
 	fix_conflict usr/lib64 usr lib
+}
+
+[ "${version}" = true ] && {
+
+	echo -n $(basename "$0")
+	
+	# Extrai a versão diretamente dos cabeçalhos do programa
+	
+	grep '^# Version ' "$0" | tail -1 | cut -d : -f 1 | tr -d \#
+	
+	exit 
 }
 
 [ "${XDEB_OPT_CLEAN_DIR}" != true ] && [ "${XDEB_OPT_WARN_CONFLICT}" != true ] || {

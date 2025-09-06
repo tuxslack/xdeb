@@ -1,0 +1,22 @@
+#!/bin/bash
+
+clear
+
+# ----------------------------------------------------------------------------------------
+
+# Internacionalização com gettext
+
+export TEXTDOMAIN=xdeb
+export TEXTDOMAINDIR=/usr/share/locale
+
+# ----------------------------------------------------------------------------------------
+
+
+build() {
+    curl -o package.deb https://release.axocdn.com/linux/gitkraken-amd64.deb
+}
+
+run() {
+    "${xdeb_path}" -Sedf --not-deps=musl package.deb
+    xbps-query --repository="${XDEB_PKGROOT}/binpkgs" -x gitkraken | grep 'musl' >/dev/null && fail "$(gettext "musl added as dependency")"
+}

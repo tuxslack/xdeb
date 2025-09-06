@@ -1,0 +1,22 @@
+#!/bin/bash
+
+clear
+
+# ----------------------------------------------------------------------------------------
+
+# Internacionalização com gettext
+
+export TEXTDOMAIN=xdeb
+export TEXTDOMAINDIR=/usr/share/locale
+
+# ----------------------------------------------------------------------------------------
+
+
+build() {
+    return
+}
+
+run() {
+    "${xdeb_path}" -SQ || fail "$(gettext "xdeb failed")"
+    [ -f "${XDEB_PKGROOT}/shlibs" ] || fail "$(gettext "shlibs file does not exist")"
+}

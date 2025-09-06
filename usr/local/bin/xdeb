@@ -9,6 +9,7 @@ clear
 export TEXTDOMAIN=xdeb
 export TEXTDOMAINDIR=/usr/share/locale
 
+
 # ----------------------------------------------------------------------------------------
 
 
@@ -116,6 +117,7 @@ genrdeps() {
 
 # If 2 arguments, move $1 to $2/$1
 # if 3 arguments, move $1 to $2/$3
+
 fix_conflict() {
 	[ ! -e "${XDEB_DESTDIR}/${1}" ] || [ ! -d "${XDEB_DESTDIR}/${1}" ] && return 1
 
@@ -135,8 +137,11 @@ check_command() {
 }
 
 usage() {
+
 	cat << EOF
+
 $(gettext "usage"): xdeb [-S] [-d] [-Sd] [--deps] ... $(gettext "FILE")
+
   -d                          $(gettext "Automatic dependency resolution")
   -S                          $(gettext "Download shlibs file for automatic dependencies")
   -c                          $(gettext "Like -C, excluding shlibs and binpkgs")
@@ -162,9 +167,11 @@ $(gettext "usage"): xdeb [-S] [-d] [-Sd] [--deps] ... $(gettext "FILE")
   --help | -h                 $(gettext "Show help page")
 
 $(gettext "example"):
+
   xdeb -Cq                    $(gettext "Remove all files and quit")
   xdeb -Sd FILE               $(gettext "Sync depdendency list and create package")
   xdeb --deps='tar>0' FILE    $(gettext "Add tar as manual dependency and create package")
+
 EOF
 	exit "${1}"
 }

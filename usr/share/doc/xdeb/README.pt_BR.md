@@ -6,7 +6,7 @@ xdeb é um script de shell script para converter pacotes deb(ian) para o formato
 ## Uso
 
 ### Convertendo pacotes
-A conversão criará arquivos no seu diretório de trabalho atual. Consulte [as instruções de instalação](#Instalacao) para obter mais informações.
+A conversão criará arquivos no seu diretório de trabalho atual. Consulte [as instruções de instalação](#Instalação) para obter mais informações.
 
 1. Instalar dependências: `xbps-install binutils tar curl xbps xz gettext`
 2. Baixar xdeb: `curl -LO github.com/xdeb-org/xdeb/releases/latest/download/xdeb`
@@ -14,7 +14,7 @@ A conversão criará arquivos no seu diretório de trabalho atual. Consulte [as 
 4. Converter: `./xdeb -Sedf <name>_<version>_<arch>.deb`
 5. Instalar: `xbps-install -R ./binpkgs <name>`
 
-### Instalacao
+### Instalação
 Copie o script para `/usr/local/bin/` e defina `XDEB_PKGROOT=${HOME}/.config/xdeb` para evitar bagunçar seu diretório de trabalho atual.
 Os binários serão então exportados para `${XDEB_PKGROOT-.}/binpkgs`.
 

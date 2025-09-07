@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+# O Void Linux usa /bin/sh por padrão.
 
 clear
 
@@ -12,7 +14,7 @@ export TEXTDOMAINDIR=/usr/share/locale
 # ----------------------------------------------------------------------------------------
 
 
-build() {
+function build() {
     tee control >/dev/null <<EOF
 Package: no-files
 Version: 0
@@ -27,6 +29,6 @@ EOF
     ar -rc package.deb control.tar data.tar
 }
 
-run() {
+function run() {
     xbps-query --repository="${XDEB_PKGROOT}/binpkgs" -f no-files
 }

@@ -5,7 +5,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xdeb 1.5\n"
+"Project-Id-Version: xdeb 1.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-06 00:15-0300\n"
 "PO-Revision-Date: 2025-09-06 00:15-0300\n"
@@ -214,7 +214,7 @@ msgid "Conflict: '%s'. Use '-e' to remove automatically."
 msgstr "Conflito: '%s'. Use '-e' para remover automaticamente."
 
 #: xdeb.sh:384
-msgid " Conflict: '%s'"
+msgid "Conflict: '%s'"
 msgstr "Conflito: '%s'"
 
 #: xdeb.sh:390
@@ -273,4 +273,90 @@ msgstr "antigo /usr/lib/dir modificado"
 #: conflicting-with-existing-target.test:41
 msgid "/lib/dir not merged with /usr/lib/dir"
 msgstr "/lib/dir não mesclado com /usr/lib/dir"
+
+#: xdeb.sh:78
+msgid "%s version: %s"
+msgstr "Versão do %s: %s"
+
+#: xdeb.sh:201
+msgid "Show xdeb version"
+msgstr "Mostrar a versão do xdeb"
+
+
+msgid "unimplemented"
+msgstr "não implementado"
+
+msgid "none"
+msgstr "nenhum"
+
+
+
+msgid "Version"
+msgstr "Versão"
+
+msgid "xdeb - Convert Debian packages (.deb) to Void Linux (.xbps)"
+msgstr "xdeb - Converte pacotes Debian (.deb) para Void Linux (.xbps)"
+
+msgid "Base directory of the packaging process"
+msgstr "Diretório base do processo de empacotamento"
+
+msgid "Function"
+msgstr "Função"
+
+msgid "Summary"
+msgstr "Resumo"
+
+msgid "Example content"
+msgstr "Exemplo de conteúdo"
+
+msgid "Temporary folder used to store files extracted directly from the .deb file, before being organized."
+msgstr "Pasta temporária usada para armazenar os arquivos extraídos diretamente do .deb, antes de serem organizados."
+
+msgid "This is where the .deb is initially unpacked."
+msgstr "É onde o .deb é inicialmente descompactado."
+
+msgid "Where the .deb package control metadata is extracted (such as control, maintainer, version, etc)."
+msgstr "Onde os metadados de controle do pacote .deb são extraídos (como control, maintainer, version, etc)."
+
+msgid "Control File\n\nOther control files (preinst, postinst, etc.)"
+msgstr "Arquivo control\n\nOutros arquivos de controle (preinst, postinst, etc.)"
+
+msgid "Directory where the actual package files are extracted (what will be installed on the system)."
+msgstr "Diretório onde os arquivos reais do pacote são extraídos (o que será instalado no sistema)."
+
+msgid "Represents the package's file system. It is the final content that will be packaged in the .xbps file."
+msgstr "Representa o sistema de arquivos do pacote. É o conteúdo final que será empacotado no .xbps."
+
+msgid "package-name-version"
+msgstr "nome-do-pacote-versao"
+
+msgid "Final output of the script. Contains the package that can be installed with xbps-install."
+msgstr "Saída final do script. Contém o pacote que pode ser instalado com xbps-install."
+
+
+msgid "These folders make up the structure used by the xdeb script when converting .deb packages \nto the native Void Linux format (.xbps). Each directory plays a specific role \nin the content extraction, modification, and packaging steps.\n\nBelow is a description of each of them:"
+
+msgstr "Essas pastas compõem a estrutura utilizada pelo script xdeb durante a conversão de pacotes .deb \npara o formato nativo do Void Linux (.xbps). Cada diretório desempenha um papel específico \nnas etapas de extração, modificação e empacotamento do conteúdo.\n\nAbaixo está a descrição de cada uma delas:"
+
+
+msgid "General Summary: \n\nFolder What is it for?\n\nworkdir Temporary workspace (raw contents of the .deb)\ndatadir Package metadata (control, maintainer, etc.)\ndestdir Package file system (what will be installed)\nbinpkgs Final result: the generated .xbps package"
+
+
+msgstr "Resumo geral: \n\nPasta	Para que serve?\n\nworkdir	Área de trabalho temporária (conteúdo bruto do .deb)\ndatadir	Metadados do pacote (control, maintainer, etc)\ndestdir	Sistema de arquivos do pacote (o que será instalado)\nbinpkgs	Resultado final: o pacote .xbps gerado"
+
+
+msgid "Contains information about the package (name, version, description, etc.)."
+msgstr "Contém as informações sobre o pacote (nome, versão, descrição, etc)."
+
+msgid "Directory where the final .xbps package (from Void Linux) will be stored after creation."
+msgstr "Diretório onde o pacote final .xbps (do Void Linux) será armazenado depois de criado."
+
+msgid "You need to install the %s package on your system."
+msgstr "Falta instalar o pacote %s no seu sistema."
+
+
+msgid "Executable '%s' not found."
+msgstr "Executável '%s' não encontrado."
+
+
 

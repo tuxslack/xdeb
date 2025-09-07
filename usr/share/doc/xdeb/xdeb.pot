@@ -214,7 +214,7 @@ msgid "Conflict: '%s'. Use '-e' to remove automatically."
 msgstr ""
 
 #: xdeb.sh:384
-msgid " Conflict: '%s'"
+msgid "Conflict: '%s'"
 msgstr ""
 
 #: xdeb.sh:390
@@ -273,3 +273,88 @@ msgstr ""
 #: conflicting-with-existing-target.test:41
 msgid "/lib/dir not merged with /usr/lib/dir"
 msgstr ""
+
+#: xdeb.sh:78
+msgid "%s version: %s"
+msgstr ""
+
+#: xdeb.sh:201
+msgid "Show xdeb version"
+msgstr ""
+
+msgid "unimplemented"
+msgstr ""
+
+msgid "none"
+msgstr ""
+
+
+
+msgid "Version"
+msgstr ""
+
+msgid "xdeb - Convert Debian packages (.deb) to Void Linux (.xbps)"
+msgstr ""
+
+msgid "Base directory of the packaging process"
+msgstr ""
+
+msgid "Function"
+msgstr ""
+
+msgid "Summary"
+msgstr ""
+
+msgid "Example content"
+msgstr ""
+
+msgid "Temporary folder used to store files extracted directly from the .deb file, before being organized."
+msgstr ""
+
+msgid "This is where the .deb is initially unpacked."
+msgstr ""
+
+msgid "Where the .deb package control metadata is extracted (such as control, maintainer, version, etc)."
+msgstr ""
+
+msgid "Control File\n\nOther control files (preinst, postinst, etc.)"
+msgstr ""
+
+msgid "Directory where the actual package files are extracted (what will be installed on the system)."
+msgstr ""
+
+msgid "Represents the package's file system. It is the final content that will be packaged in the .xbps file."
+msgstr ""
+
+msgid "package-name-version"
+msgstr ""
+
+msgid "Final output of the script. Contains the package that can be installed with xbps-install."
+msgstr ""
+
+
+msgid "These folders make up the structure used by the xdeb script when converting .deb packages \nto the native Void Linux format (.xbps). Each directory plays a specific role \nin the content extraction, modification, and packaging steps.\n\nBelow is a description of each of them:"
+
+msgstr ""
+
+
+msgid "General Summary: \n\nFolder What is it for?\n\nworkdir Temporary workspace (raw contents of the .deb)\ndatadir Package metadata (control, maintainer, etc.)\ndestdir Package file system (what will be installed)\nbinpkgs Final result: the generated .xbps package"
+
+
+msgstr ""
+
+
+msgid "Contains information about the package (name, version, description, etc.)."
+msgstr ""
+
+msgid "Directory where the final .xbps package (from Void Linux) will be stored after creation."
+msgstr ""
+
+
+msgid "You need to install the %s package on your system."
+msgstr ""
+
+
+msgid "Executable '%s' not found."
+msgstr ""
+

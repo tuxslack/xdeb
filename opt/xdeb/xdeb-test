@@ -1,17 +1,19 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+# O Void Linux usa /bin/sh por padrão.
 
 clear
 
-begin_test() {
+function begin_test() {
     printf "%s\n" "--------------------------------------------------------------------------------"
     printf "\033[1m% 80s\033[0m\n" "${@}"
 }
 
-end_test() {
+function end_test() {
     return
 }
 
-fail() {
+function fail() {
     printf "\033[31;1m% 80s\033[0m\n" "${@}"
 }
 

@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+# O Void Linux usa /bin/sh por padrão.
 
 clear
 
@@ -12,11 +14,11 @@ export TEXTDOMAINDIR=/usr/share/locale
 # ----------------------------------------------------------------------------------------
 
 
-build() {
+function build() {
     return
 }
 
-run() {
+function run() {
     "${xdeb_path}" -SQ || fail "$(gettext "xdeb failed")"
     [ -f "${XDEB_PKGROOT}/shlibs" ] || fail "$(gettext "shlibs file does not exist")"
 }

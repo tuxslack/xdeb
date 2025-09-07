@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+# O Void Linux usa /bin/sh por padrão.
 
 clear
 
@@ -12,7 +14,7 @@ export TEXTDOMAINDIR=/usr/share/locale
 # ----------------------------------------------------------------------------------------
 
 
-build() {
+function build() {
     mkdir -p path/to/empty/dir
     touch path/to/empty/file
 
@@ -30,7 +32,7 @@ EOF
     ar -rc package.deb control.tar data.tar
 }
 
-run() {
+function run() {
     "${xdeb_path}" -Se package.deb || fail "$(gettext "build failed")"
 
     files="$(xbps-query --repository="${XDEB_PKGROOT}/binpkgs" -f remove-empty-dirs 2>&1)"

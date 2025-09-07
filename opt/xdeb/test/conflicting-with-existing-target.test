@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+# O Void Linux usa /bin/sh por padrão.
 
 clear
 
@@ -12,7 +14,7 @@ export TEXTDOMAINDIR=/usr/share/locale
 # ----------------------------------------------------------------------------------------
 
 
-build() {
+function build() {
     mkdir -p usr/lib/dir
     mkdir -p lib/dir
 
@@ -23,8 +25,8 @@ build() {
 Package: $(gettext "conflicting-with-existing-target")
 Version: 0
 Architecture: all
-Maintainer: none
-Description: none
+Maintainer: $(gettext "none")
+Description: $(gettext "none")
 EOF
 
     tar -cf control.tar control
@@ -32,7 +34,7 @@ EOF
     ar -rc package.deb control.tar data.tar
 }
 
-run() {
+function run() {
     "${xdeb_path}" -Sf package.deb || fail "$(gettext "build failed")"
 
     files="$(xbps-query --repository="${XDEB_PKGROOT}/binpkgs" -f conflicting-with-existing-target 2>&1)"

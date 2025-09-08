@@ -202,8 +202,8 @@ msgid "Invalid arch: %s. Use '--arch=...' to set arch manually."
 msgstr "Arquitetura inválida: %s. Use '--arch=...' para definir a arquitetura manualmente."
 
 #: xdeb.sh:359
-msgid "Resolved dependencies (%s)"
-msgstr "Dependências resolvidas (%s)"
+msgid "Resolved dependencies: (%s)"
+msgstr "Dependências resolvidas: (%s)"
 
 #: xdeb.sh:369
 msgid "Removed empty directory %s"
@@ -358,5 +358,8 @@ msgstr "Falta instalar o pacote %s no seu sistema."
 msgid "Executable '%s' not found."
 msgstr "Executável '%s' não encontrado."
 
+
+msgid "To remove the package: \n\nsudo xbps-remove -y %s"
+msgstr "Para remover o pacote: \n\nsudo xbps-remove -y %s"
 
 

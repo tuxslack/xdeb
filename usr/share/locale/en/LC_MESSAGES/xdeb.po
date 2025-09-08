@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-06 00:15-0300\n"
 "PO-Revision-Date: 2025-09-06 00:15-0300\n"
-"Last-Translator: Automatically generated\n"
+"Last-Translator: Fernando Souza\n"
 "Language-Team: none\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
@@ -202,8 +202,8 @@ msgid "Invalid arch: %s. Use '--arch=...' to set arch manually."
 msgstr "Invalid arch: %s. Use '--arch=...' to set arch manually."
 
 #: xdeb.sh:359
-msgid "Resolved dependencies (%s)"
-msgstr "Resolved dependencies (%s)"
+msgid "Resolved dependencies: (%s)"
+msgstr "Resolved dependencies: (%s)"
 
 #: xdeb.sh:369
 msgid "Removed empty directory %s"
@@ -354,4 +354,6 @@ msgstr ""
 msgid "Executable '%s' not found."
 msgstr ""
 
+msgid "To remove the package: \n\nsudo xbps-remove -y %s"
+msgstr ""
 

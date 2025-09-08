@@ -17,6 +17,38 @@ export TEXTDOMAINDIR=/usr/share/locale
 
 # ----------------------------------------------------------------------------------------
 
+# Por que o man ignora o idioma no Void Linux?
+
+# O mandoc (usado por Void Linux) não respeita LANG ou LC_MESSAGES para selecionar páginas 
+# localizadas. Ele simplesmente busca a primeira página que encontrar no caminho padrão, 
+# geralmente em /usr/share/man/man1, e ignora subdiretórios como pt_BR.
+
+# ✅ Soluções possíveis
+
+# Substituir a versão em inglês pela versão em português
+
+# Se você quiser que man xdeb exiba a versão em português por padrão:
+
+
+# Isso ignora o banco de dados e abre o arquivo diretamente. Se isso funcionar, sabemos 
+# que o conteúdo está correto e o problema é só com o índice.
+
+# man -l /usr/share/man/pt_BR/man1/xdeb.1
+
+# echo $MANPATH
+# export MANPATH="/usr/share/man:/usr/share/man/pt_BR"
+
+# Criar um alias para abrir diretamente a versão em português
+
+# manpt() {
+#    man -l "/usr/share/man/pt_BR/man1/$1.1"
+# }
+
+
+# manpt xdeb.1
+
+
+
 
 # Directories and filenames
 
@@ -675,7 +707,12 @@ esac
 # Remove trailing space
 XDEB_DEPENDENCIES="${XDEB_DEPENDENCIES%* }"
 
-[ -n "${XDEB_DEPENDENCIES}" ] && log_info "$(gettext "Resolved dependencies (%s)" | xargs printf "%s\n" "${XDEB_DEPENDENCIES}")"
+# shellcheck disable=SC2059
+[ -n "${XDEB_DEPENDENCIES}" ] && echo -e " " &&  msg=$(gettext "Resolved dependencies: (%s)") && log_info "$(printf "$msg" "${XDEB_DEPENDENCIES}")" && echo -e " "     
+
+# shellcheck disable=SC2059
+
+# log_info "$(gettext "Resolved dependencies (%s)" | xargs printf "%s\n" "${XDEB_DEPENDENCIES}")"
 
 
 
@@ -730,7 +767,9 @@ if [ "${XDEB_OPT_CLEAN_DIR}" = true ] || [ "${XDEB_OPT_WARN_CONFLICT}" = true ];
 		exit "${rc-0}"
 
    ) || { 
+    # msg=$(gettext "Consider (re)moving file(s) from '%s' and run `xdeb -rb`")
     msg=$(gettext "Consider (re)moving file(s) from '%s' and run \`xdeb -rb\`")
+ 
 
     # shellcheck disable=SC2059
     log_crit "$(printf "$msg" "$XDEB_DESTDIR")"
@@ -782,7 +821,9 @@ if ! xbps-create \
 fi
 
 [ "${XDEB_OPT_REGISTER}" = true ] && {
+
 	xbps-rindex -a "${out}.${archs}.xbps" >&2
+
 }
 
 [ -t 1 ] || echo "${XDEB_BINPKGS#"${PWD}/"}/${out}.${archs}.xbps"
@@ -793,13 +834,61 @@ fi
 
 if [ "${XDEB_OPT_INSTALL}" = true ]; then
 
-	"$(command -v sudo doas 2>/dev/null | head -n1)" xbps-install -R "${XDEB_BINPKGS#"${PWD}/"}" "${out}"
+
+
+
+installer=$(command -v sudo doas 2>/dev/null | head -n1)
+
+# Executa o comando de instalação com verificação direta
+if "$installer" xbps-install -R "${XDEB_BINPKGS#"${PWD}/"}" "${out}"; then
+
+    # notify-send "✔️ Sucesso" ""
+    echo -e "\n"
+
+    # Verifica se o pacote foi instalado
+    xbps-query -l | grep -F -- "${out}"
+
+    echo -e "\n"
+
+    xbps-query -S "${out}"
+
+    # echo -e "\n$(printf "$(gettext "To remove the package:\nsudo xbps-remove -y %s")" "${out}")"
+
+    # shellcheck disable=SC2059
+    echo -e "\n$(printf "$(gettext "To remove the package: 
+
+sudo xbps-remove -y %s")" "${out}")"
+
+    # notify-send "✔️ Pacote instalado" "$(gettext 'Use o comando para remover:\n')sudo xbps-remove -y ${out}"
+
+else
+
+    # Você pode descomentar estas linhas se quiser lidar com falha
+
+    # notify-send "❌ Erro" ""
+
+    echo "Erro ao instalar o pacote: ${out}"
+
+fi
+
+
+
+
 
 else
 
     # Forma segura (e correta) de resolver o SC2059:
 
-    log_info "$(gettext "Install using \`xbps-install -R %s %s \`" | xargs -0 printf '%s\n' "${XDEB_BINPKGS#"${PWD}/"}" "${out}")"
+    echo -e "\n"
+
+    # shellcheck disable=SC2059
+    # log_info "$(printf "$(gettext 'Install using `xbps-install -R %s %s `')" "${XDEB_BINPKGS#"${PWD}/"}" "${out}")"
+
+    # Aspas simples impedem a expansão de variáveis ou comandos. gettext também precisa de cuidado com escape.
+
+    log_info "$(gettext "Install using \`xbps-install -R %s %s \`" | xargs printf "${XDEB_BINPKGS#"${PWD}/"}" "${out}")"
+
+
 
 # Explicação:
 
@@ -809,9 +898,115 @@ else
 
 # O uso do -0 (ou --null) em xargs depende de seu sistema — remova se necessário.
 
+    echo -e " "
+
+    # ls -lh "${XDEB_BINPKGS#"${PWD}/"}" | grep "${out}"
+
+    # ls | grep pode falhar com nomes de arquivos que contenham espaços, acentos ou caracteres especiais.
+
+    for file in "${XDEB_BINPKGS#"${PWD}/"}"/*; do
+
+        if [[ "$file" == *"$out"* ]]; then
+
+            ls -lh "$file"
+
+        fi
+
+    done
+
+
+    # shellcheck disable=SC2059
+    echo -e "\n$(printf "$(gettext "To remove the package: 
+
+sudo xbps-remove -y %s")" "${out}")"
+
 fi
 
 # ----------------------------------------------------------------------------------------
+
+
+# Exemplo:
+
+
+# $ xdeb -e dissenter-browser_1.5.114_amd64.deb
+
+# I Arquivos extraídos
+# index: skipping `dissenter-browser-1.5.114_1' (x86_64), already registered.
+# index: 1 packages registered.
+
+
+# I Instalar usando `xbps-install -R /tmp/xdeb/binpkgs dissenter-browser-1.5.114_1 `
+ 
+# -rw-r--r-- 1 anon anon 77M set  8 01:49 dissenter-browser-1.5.114_1.x86_64.xbps
+
+
+
+# sudo xbps-install -R /tmp/xdeb/binpkgs dissenter-browser-1.5.114_1
+
+# Name              Action    Version           New version            Download size
+# dissenter-browser install   -                 1.5.114_1              - 
+
+# Size required on disk:         216MB
+# Space available on disk:      3499MB
+
+# Do you want to continue? [Y/n] Y
+
+# [*] Verifying package integrity
+# dissenter-browser-1.5.114_1: verifying SHA256 hash...
+
+# [*] Collecting package files
+# dissenter-browser-1.5.114_1: collecting files...
+
+# [*] Unpacking packages
+# dissenter-browser-1.5.114_1: unpacking ...
+
+# [*] Configuring unpacked packages
+# dissenter-browser-1.5.114_1: configuring ...
+# dissenter-browser-1.5.114_1: installed successfully.
+
+# 0 downloaded, 1 installed, 0 updated, 1 configured, 0 removed, 0 on hold.
+
+
+# xbps-query -l | grep dissenter-browser
+# ii dissenter-browser-1.5.114_1               The web browser from Dissenter
+
+
+# $ xbps-query -S dissenter-browser
+# architecture: x86_64
+# filename-sha256: 838e84db3a21979692d977a9ba9109d00b61ee8f486c269b39b2fc8b441ec4a1
+# filename-size: 77MB
+# install-date: 2025-09-08 01:27 UTC
+# installed_size: 216MB
+# long_desc: The web browser from Dissenter
+# maintainer: Gab AI Inc <support@dissenter.com>
+# metafile-sha256: e30cda634b9287254b5308b2a243fb6794db8a8d551e5cb318db1f9cc034d362
+# pkgname: dissenter-browser
+# pkgver: dissenter-browser-1.5.114_1
+# repository: /tmp/xdeb/binpkgs
+# short_desc: The web browser from Dissenter
+# state: installed
+# tags: xdeb
+
+#  =================================================================================
+
+# xdeb -Sde dissenter-browser_1.5.114_amd64.deb
+
+# I Shlibs sincronizadas
+# I Arquivos extraídos
+ 
+# I Dependências resolvidas: (alsa-lib>=1.0.20_1 at-spi2-atk>=2.6.0_1 at-spi2-core>=1.91.91_1 atk>=1.26.0_1 cairo>=1.8.6_1 dbus-libs>=1.2.10_1 expat>=2.0.0_1 gdk-pixbuf>=2.22.0_1 glib>=2.80.0_1 glibc>=2.41_1 gtk+3>=3.0.0_1 libX11>=1.2_1 libXScrnSaver>=1.1.3_1 libXcomposite>=0.4.0_1 libXcursor>=1.1.9_1 libXdamage>=1.1.1_1 libXext>=1.0.5_1 libXfixes>=4.0.3_1 libXi>=1.2.1_1 libXrandr>=1.3.0_1 libXrender>=0.9.4_1 libXtst>=1.0.3_1 libcups>=1.5.3_1 libgcc>=4.4.0_1 libxcb>=1.2_1 nspr>=4.8_1 nss>=3.12.4_1 pango>=1.24.0_1)
+ 
+# index: skipping `dissenter-browser-1.5.114_1' (x86_64), already registered.
+# index: 1 packages registered.
+
+
+# I Instalar usando `xbps-install -R /tmp/xdeb/binpkgs dissenter-browser-1.5.114_1 `
+ 
+# -rw-r--r-- 1 anon anon 77M set  8 02:42 dissenter-browser-1.5.114_1.x86_64.xbps
+
+#  =================================================================================
+
+
 
 
 exit 0

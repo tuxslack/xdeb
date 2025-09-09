@@ -130,6 +130,12 @@ https://ftp.unpad.ac.id/ctan/fonts/noto/truetype/
   $ shellcheck ./xdeb
 
 
+  $ cat xdeb-gui.sh | grep shellcheck | wc -l
+  5
+
+  $ shellcheck xdeb-gui.sh
+
+
 * Improved error handling in:
 
   log_crit "$(gettext "Not a valid deb file, one of the extraction steps failed")"

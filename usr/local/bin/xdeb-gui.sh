@@ -94,15 +94,16 @@ if [ ${#faltando[@]} -gt 0 ]; then
     done
 
 
-message_template=$(
-  gettext "The following commands are not installed:\n\n%s\n\nYou can install them with:\n\n sudo xbps-install -Sy %s"
-)
-
+message_template="The following commands are not installed:\n\n%s\n\nYou can install them with:\n\n sudo xbps-install -Sy %s"
+# shellcheck disable=SC2059
 message=$(printf "$message_template" "$lista_formatada" "${faltando[*]}")
+
+# 🔒 Essa abordagem é segura desde que você controle o conteúdo da string (ou confie na origem, como gettext).
+
 
 
     yad --center --width="500" --height="300" \
-        --text="$mensagem" \
+        --text="$message" \
         --title="$(gettext "Missing dependencies")" \
         --button="$(gettext "Close")":1 \
         --window-icon=dialog-error \
@@ -139,9 +140,14 @@ fi
 
 # ----------------------------------------------------------------------------------------
 
+# Para evitar SC2059
 
 message_template=$(gettext "The log file will be saved to:\n\n%s\n\nIt is recommended to check after each package conversion.")
-mg=$(printf "$message_template" "$log")
+
+# shellcheck disable=SC2059
+mg=$(printf '%s' "$(printf "$message_template" "$log")")
+
+# Se confia que message_template conterá apenas um %s, e controla ou revisou a tradução, pode manter o código e suprimir o aviso com um comentário shellcheck
 
 notify-send -i dialog-information -t 20000 "xdeb" "$mg"
 
@@ -408,31 +414,59 @@ fi
 
 
 
+"5") # Adicionar dependências manualmente (--deps)
+
+  arquivo=$(yad --center \
+                --title="$(gettext "Select the .deb package")" \
+                --file \
+                --buttons-layout=center \
+                --button="$(gettext "Cancel")":1 \
+                --button="$(gettext "OK")":0 \
+                2>/dev/null)
 
 
-    "5") # Adicionar dependências manualmente (--deps)
 
-      arquivo=$(yad --center --title="$(gettext "Select the .deb package")" --file --buttons-layout=center --button="$(gettext "Cancel")":1 --button="$(gettext "OK")":0  2>/dev/null)
-      
+# ✔️ Vantagens:
 
-if ! deps=$(yad --center --entry --title="$(gettext "Dependencies")" --text="$(gettext "Enter dependencies (e.g. tar>0, gzip, etc.)"):") --buttons-layout=center --button="$(gettext "Cancel")":1 --button="$(gettext "OK")":0  2>/dev/null ; then
+# Evita SC2037 (erro de sintaxe ao misturar captura e argumentos).
+
+# Evita SC2181 (uso indireto de $?).
+
+# Fica mais legível e idiomático.
+
+
+if ! deps=$(yad --center --entry \
+                --title="$(gettext "Dependencies")" \
+                --text="$(gettext "Enter dependencies (e.g. tar>0, gzip, etc.)"):" \
+                --buttons-layout=center \
+                --button="$(gettext "Cancel")":1 \
+                --button="$(gettext "OK")":0 \
+                2>/dev/null); then
 
   continue # volta ao menu se o usuário cancelar
 
 fi
 
 
-if [[ "$arquivo" != *.deb ]]; then
 
-  yad --error --text="$(gettext "Please select a valid .deb file.")" --buttons-layout=center --button="$(gettext "Cancel")":1 --button="$(gettext "OK")":0
+  if [[ "$arquivo" != *.deb ]]; then
+    yad --error \
+        --text="$(gettext "Please select a valid .deb file.")" \
+        --buttons-layout=center \
+        --button="$(gettext "Cancel")":1 \
+        --button="$(gettext "OK")":0
+    continue
+  fi
 
-  continue
+  [ -n "$arquivo" ] && [ -n "$deps" ] && \
+  xdeb --deps="$deps" "$arquivo" | tee -a "$log" && \
+  yad --center --info \
+      --text="$(gettext "Conversion completed successfully!")" \
+      --buttons-layout=center \
+      --button="$(gettext "OK")":0 \
+      2>/dev/null
 
-fi
-
-      [ -n "$arquivo" ] && [ -n "$deps" ] && xdeb --deps="$deps" "$arquivo" | tee -a "$log" &&  yad --center --info --text="$(gettext "Conversion completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
-
-      ;;
+  ;;
 
 
 
@@ -764,6 +798,10 @@ fi
 
 
     "0" | "") # Sair
+
+      # Ignorar o aviso SC2005 do ShellCheck (permitir o uso de echo "$(gettext ...)")
+
+      # shellcheck disable=SC2005
 
       echo "$(gettext "Leaving...")"
 

@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# O Void Linux usa /bin/sh por padrão.
+
+clear
+
+# ----------------------------------------------------------------------------------------
+
+# Internacionalização com gettext
+
+export TEXTDOMAIN=xdeb
+export TEXTDOMAINDIR=/usr/share/locale
+
+# ----------------------------------------------------------------------------------------
+
+
+function build() {
+    curl -o package.deb http://repo.steampowered.com/steam/archive/stable/steam_latest.deb
+}
+
+function run() {
+    "${xdeb_path}" -Sedfi package.deb
+    xbps-query --repository="${XDEB_PKGROOT}/binpkgs" -f steam-launcher
+
+    # fail "$(gettext "unimplemented")"
+}

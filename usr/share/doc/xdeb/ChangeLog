@@ -157,6 +157,48 @@ This allows users to perform common tasks with xdeb without having to type comma
 It contains the main features of xdeb organized in a simple and interactive menu. It also allows
 you to enter custom arguments for options such as --deps, --arch, etc.
 
+
+* $log variable can be overridden in parallel environments.
+
+
+* To change the order of the buttons, you must manually change the order in the script.
+
+Example:
+
+# 🇺🇸 American standard: OK on the left
+--button="$(gettext "OK")":0 --button="$(gettext "Cancel")":1
+
+# 🇧🇷 Brazilian/European standard: Cancel on the left
+--button="$(gettext "Cancel")":1 --button="$(gettext "OK")":0
+
+
+* Use of variables not explicitly declared as local.
+
+function fix_conflict() {
+	[ ! -e "${XDEB_DESTDIR}/${1}" ] || [ ! -d "${XDEB_DESTDIR}/${1}" ] && return 1
+
+	local src="${1}"
+	local dst="${2}/${3-"${1}"}"
+
+
+This could cause side effects if another function or part of the script uses the same variables.
+
+
+* Detect if the shell is actually bash
+
+* Check if grep supports the -P option
+
+
+* Check if the package is installed
+
+ ign="$(xbps-query -f "${pkgname}" | sed 's/ -> .*//')"
+
+
+* Does not capture all lines of the long description
+
+long_desc="$(grep -Po -m1 -z "Description:[ \t\n]*\K.*" "${XDEB_DATADIR}/control" | tr '\0' '\n')"
+
+
 ------------------------------------------------------------------------------------------
 
 Jun 10, 2024   toluschr <https://github.com/toluschr>

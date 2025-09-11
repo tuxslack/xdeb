@@ -13,7 +13,10 @@
 
 
 
-clear
+# Evite usar 'clear' aqui, pois pode gerar caracteres indesejados em interfaces gráficas (yad).
+
+# clear
+
 
 # ----------------------------------------------------------------------------------------
 
@@ -25,6 +28,8 @@ export TEXTDOMAINDIR=/usr/share/locale
 # export TEXTDOMAINDIR=../../share/locale/
 
 # ----------------------------------------------------------------------------------------
+
+# cd ~/
 
 # Por que o man ignora o idioma no Void Linux?
 
@@ -98,6 +103,13 @@ export TEXTDOMAINDIR=/usr/share/locale
 # xdeb
 
 
+# Se a variável XDEB_PKGROOT não estiver definida ou estiver vazia, será usado "/opt/binpkgs" como valor.
+
+# Exemplo:
+
+# XDEB_PKGROOT=""   → vira  /opt/binpkgs
+# XDEB_PKGROOT="${HOME}/.config/xdeb" → permanece ${HOME}/.config/xdeb
+
 
 XDEB_PKGROOT="$(realpath -m "${XDEB_PKGROOT:-/opt/binpkgs}")"
 
@@ -126,6 +138,19 @@ XDEB_OPT_WARN_CONFLICT="${XDEB_OPT_WARN_CONFLICT-true}"
 
 XDEB_REFUSE=false
 XDEB_SUFFIX=""
+
+# ----------------------------------------------------------------------------------------
+
+# Incompatibilidade com shell não Bash
+
+# Se alguém usar com /bin/sh, vai falhar (especialmente no Void Linux, onde /bin/sh → dash).
+
+if [ -z "$BASH_VERSION" ]; then
+
+    echo -e "\n$(gettext "This script requires bash. Exiting...")\n"
+
+    exit 1
+fi
 
 # ----------------------------------------------------------------------------------------
 
@@ -268,15 +293,21 @@ script_version=$(grep -E "^# version:" "$0" | awk '{print $3}')
 
 version() {
 
-    clear
+    # clear
 
-    msg=$(gettext "%s version: %s")
+    # msg=$(gettext "%s version: %s")
 
     # shellcheck disable=SC2059
-    printf '%s\n' "$(printf "$msg" "$0" "$script_version")"
+    # printf '%s\n' "$(printf "$msg" "$0" "$script_version")"
+
+    # echo $(grep -E "^# version:" "$0" | awk '{print $3}')
+
+
+    # Evite usar 'clear' aqui, pois pode gerar caracteres indesejados em interfaces gráficas (yad).
+
+    grep -E "^# version:" "$0" | awk '{print $3}'
 
 }
-
 
 
 # ----------------------------------------------------------------------------------------
@@ -367,11 +398,40 @@ function genrdeps() {
 # ----------------------------------------------------------------------------------------
 
 function fix_conflict() {
+
 	[ ! -e "${XDEB_DESTDIR}/${1}" ] || [ ! -d "${XDEB_DESTDIR}/${1}" ] && return 1
 
-	src="${1}"
-	dst="${2}/${3-"${1}"}"
+	local src="${1}"
+	local dst="${2}/${3-"${1}"}"
+
 	mkdir -p "${XDEB_DESTDIR}/${2}"
+
+    # Risco importante: o uso de cp -rT pode sobrescrever o conteúdo do destino se ele já existir.
+
+
+    # Verifica se o diretório de destino já existe E tem conteúdo
+
+    # Não copie nada se o diretório de destino já existir e contiver arquivos ou subdiretórios.
+
+    if [ -d "${XDEB_DESTDIR}/${dst}" ] && [ -n "$(ls -A "${XDEB_DESTDIR}/${dst}")" ]; then
+
+
+        # ✅ Solução recomendada (segura e compatível com ShellCheck):
+
+        # Em vez de passar o conteúdo de msg diretamente como formato, sempre use uma string 
+        # de formato fixa com printf, e passe a variável como argumento.
+
+        msg=$(gettext "Error: Destination directory '%s' already exists and is NOT empty.")
+
+        printf "%s\n" "$(printf "%s" "$msg")" "${XDEB_DESTDIR}/${dst}"
+
+        sleep 5
+
+        return 1
+
+    fi
+
+
 	cp -rT "${XDEB_DESTDIR}/${src}" "${XDEB_DESTDIR}/${dst}"
 
 	# Faz o shell abortar imediatamente com um erro se a variável XDEB_DESTDIR estiver vazia ou não definida.
@@ -595,6 +655,62 @@ done
 
 clean
 
+
+# ----------------------------------------------------------------------------------------
+
+# mkdir: não foi possível criar o diretório “/opt/binpkgs”: Permissão negada
+# mkdir: não foi possível criar o diretório “/opt/binpkgs”: Permissão negada
+# mkdir: não foi possível criar o diretório “/opt/binpkgs”: Permissão negada
+# mkdir: não foi possível criar o diretório “/opt/binpkgs”: Permissão negada
+# mkdir: não foi possível criar o diretório “/opt/binpkgs”: Permissão negada
+
+
+
+check_dir_permissions() {
+
+    # Verifica se o diretório existe e se é possível escrever e ler nele
+
+    if [ ! -d "${XDEB_PKGROOT}" ] || [ ! -w "${XDEB_PKGROOT}" ] || [ ! -r "${XDEB_PKGROOT}" ]; then
+
+
+        msg=$(gettext "Error: No read/write permission on: %s
+
+Tip: Run the command with administrator privileges (e.g. using sudo), or change the directory permissions:
+")
+        
+        # ✅ Evita SC2059
+        formatted_msg=$(printf "%s" "$msg" | sed "s|%s|${XDEB_PKGROOT}|")
+
+        printf "%s\n" "$formatted_msg" >&2
+
+
+        # ✅ Mensagem adicional
+
+        echo -e "\n\t$ sudo mkdir -p \"${XDEB_PKGROOT}\" && sudo chown -R $(whoami) \"${XDEB_PKGROOT}\" \n" >&2
+
+        echo -e "\t$(gettext "or")\n"
+
+        echo -e "\t$ mkdir -p ${HOME}/.config/xdeb  && export XDEB_PKGROOT=${HOME}/.config/xdeb \n\n\t$ xdeb"
+
+        return 1
+
+    fi
+}
+
+
+
+
+
+
+check_dir_permissions "${XDEB_PKGROOT}"     || exit 1
+check_dir_permissions "${XDEB_BINPKGS}"     || exit 1
+check_dir_permissions "${XDEB_DATADIR}"     || exit 1
+check_dir_permissions "${XDEB_DESTDIR}"     || exit 1
+check_dir_permissions "${XDEB_WORKDIR}"     || exit 1
+
+# ----------------------------------------------------------------------------------------
+
+
 # Recria diretórios limpos
 
 mkdir -p "${XDEB_PKGROOT}"
@@ -645,6 +761,31 @@ mkdir -p "${XDEB_WORKDIR}" && rm -rf "${XDEB_WORKDIR:?}"/*
 
 ## Parse
 
+
+# Para verificar se o grep suporta a opção -P (Perl regex)
+
+# Só mostra o aviso caso o grep NÃO suporte -P
+
+
+# O Void Linux padrão usa o GNU grep, com suporte a -P habilitado.
+
+# Mas o usuário pode ter substituído o grep por outra versão (como busybox grep, para scripts mais enxutos).
+
+# Não é garantido que -P estará sempre disponível, especialmente em ambientes mínimos ou chroot.
+
+echo test | grep -P 'test' >/dev/null 2>&1 || {
+
+    # SC2005 (style): Useless echo? Instead of 'echo $(cmd)', just use 'cmd'.
+    # gettext "grep does NOT support -P." >&2
+
+    # shellcheck disable=SC2005
+    echo "$(gettext "grep does NOT support -P.")" >&2
+
+    exit 1
+}
+
+
+
 [ -z "${pkgname}" ] && \
 	pkgname="$(grep -Po -m1 "Package:[ \t]*\K.*" "${XDEB_DATADIR}/control")"
 [ -z "${version}" ] && \
@@ -655,8 +796,51 @@ mkdir -p "${XDEB_WORKDIR}" && rm -rf "${XDEB_WORKDIR:?}"/*
 	maintainer="$(grep -Po -m1 "Maintainer:[ \t]*\K.*" "${XDEB_DATADIR}/control")"
 [ -z "${short_desc}" ] && \
 	short_desc="$(grep -Po -m1 "Description:[ \t]*\K.*" "${XDEB_DATADIR}/control")"
+
+# ⚠️ Parsing de campos no control pode quebrar com multilinhas (como Description)
+
+# O campo Description, que pode conter múltiplas linhas com indentação, como no exemplo abaixo:
+
+# Description: Short summary
+#  This is a longer description
+#  that spans multiple lines.
+#  It is indented by one space.
+
+# long_desc="$(grep -Po -m1 -z "Description:[ \t\n]*\K.*" "${XDEB_DATADIR}/control" | tr '\0' '\n')"
+
+
+# Não captura todas as linhas da descrição longa (aquelas que vêm após a linha Description:, começando com espaço). Isso pode levar a descrições incompletas ou corrompidas.
+
+
 [ -z "${long_desc}" ] && \
-	long_desc="$(grep -Po -m1 -z "Description:[ \t\n]*\K.*" "${XDEB_DATADIR}/control" | tr '\0' '\n')"
+	# long_desc="$(grep -Po -m1 -z "Description:[ \t\n]*\K.*" "${XDEB_DATADIR}/control" | tr '\0' '\n')"
+
+long_desc="$(
+  awk '
+    $1 == "Description:" {
+      desc = substr($0, index($0, ":") + 2)
+      collecting = 1
+      next
+    }
+    collecting && /^[^ ]/ { collecting = 0 }
+    collecting { desc = desc "\n" substr($0, 2) }
+    END { print desc }
+  ' "${XDEB_DATADIR}/control"
+)"
+
+
+# 🔎 O que esse awk faz
+
+# Encontra a linha Description:.
+
+# Começa a coletar as linhas subsequentes que começam com um espaço.
+
+# Para quando encontra uma nova chave (linha não indentada).
+
+# Junta tudo na variável long_desc.
+
+
+
 [ -z "${archs}" ] && \
 	archs="$(grep -Po -m1 "Architecture:[ \t]*\K.*" "${XDEB_DATADIR}/control")"
 
@@ -745,9 +929,24 @@ XDEB_DEPENDENCIES="${XDEB_DEPENDENCIES%* }"
 
 if [ "${XDEB_OPT_CLEAN_DIR}" = true ] || [ "${XDEB_OPT_WARN_CONFLICT}" = true ]; then
 
+
+
     if command -v xbps-query >/dev/null; then
-        ign="$(xbps-query -f "${pkgname}" | sed 's/ -> .*//')"
+
+        # Uso de xbps-query -f "${pkgname}" para ignorar arquivos pode falhar se o pacote não estiver instalado.
+
+        if xbps-query --property=pkgver "${pkgname}" >/dev/null 2>&1; then
+
+           ign="$(xbps-query -f "${pkgname}" | sed 's/ -> .*//')"
+
+        fi
+
     fi
+
+
+    
+
+
 
     find "${XDEB_DESTDIR}" -depth -mindepth 1 | (
 

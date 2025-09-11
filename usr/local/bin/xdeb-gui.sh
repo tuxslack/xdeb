@@ -30,18 +30,28 @@
 
 
 
+# Evite usar 'clear' aqui, pois pode gerar caracteres indesejados em interfaces gráficas (yad).
 
 clear
 
-rm "$log" 2>/dev/null
 
-set -e
+# Definir um título padrão para janelas criadas com yad
 
+title="xdeb"
+
+
+# Se dois usuários abrirem o script ao mesmo tempo, ambos escrevem no arquivo de log.
 
 # shellcheck disable=SC2034
-log="/tmp/.xdeb-gui.log"
+log="/tmp/xdeb-gui-$$.log"
 
 
+rm "$log" 2>/dev/null
+
+
+# Usando "set -e" a opção 14 o yad não abre.
+
+set -e
 
 # ----------------------------------------------------------------------------------------
 
@@ -51,6 +61,22 @@ export TEXTDOMAIN=xdeb
 export TEXTDOMAINDIR=/usr/share/locale
 
 # export TEXTDOMAINDIR=../../share/locale/
+
+
+# ----------------------------------------------------------------------------------------
+
+# cd ~/
+
+# Incompatibilidade com shell não Bash
+
+# Se alguém usar com /bin/sh, vai falhar (especialmente no Void Linux, onde /bin/sh → dash).
+
+if [ -z "$BASH_VERSION" ]; then
+
+    echo -e "\n$(gettext "This script requires bash. Exiting...")\n"
+
+    exit 1
+fi
 
 # ----------------------------------------------------------------------------------------
 
@@ -125,8 +151,11 @@ fi
 
 
 
+# Poderia falhar se xdeb estiver em outro local do PATH.
 
-if ! [ -f "/usr/local/bin/xdeb" ] ; then
+# /usr/local/bin/xdeb
+
+if ! command -v xdeb &>/dev/null; then
 
   yad --center --error --title="$(gettext "Error")..."  --text "$(gettext "The xdeb script was not found.")"  \
   --buttons-layout=center \
@@ -134,7 +163,7 @@ if ! [ -f "/usr/local/bin/xdeb" ] ; then
   --width="300" \
   2>/dev/null
 
-  exit 1
+  #exit 1
 
 fi
 
@@ -142,7 +171,11 @@ fi
 
 # Para evitar SC2059
 
-message_template=$(gettext "The log file will be saved to:\n\n%s\n\nIt is recommended to check after each package conversion.")
+message_template=$(gettext "The log file will be saved to:
+
+%s
+
+It is recommended to check after each package conversion.")
 
 # shellcheck disable=SC2059
 mg=$(printf '%s' "$(printf "$message_template" "$log")")
@@ -278,7 +311,7 @@ fi
 
 if [[ "$arquivo" != *.deb ]]; then
 
-  yad --error --text="$(gettext "Please select a valid .deb file.")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
+  yad --error --title="$title" --text="$(gettext "Please select a valid .deb file.")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
 
   continue # Se cancelado, volta ao menu principal
 
@@ -292,11 +325,11 @@ if [ -n "$arquivo" ]; then
 
   if xdeb "$arquivo" | tee -a "$log"; then
 
-    yad --center --info --text="$(gettext "Conversion completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
+    yad --center --info --title="$title" --text="$(gettext "Conversion completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
 
   else
 
-    yad --center --error --text="$(gettext "Error converting package.")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
+    yad --center --error --title="$title" --text="$(gettext "Error converting package.")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
 
   fi
 
@@ -317,7 +350,7 @@ fi
 
 if [[ "$arquivo" != *.deb ]]; then
 
-  yad --error --text="$(gettext "Please select a valid .deb file.")"  --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
+  yad --error --title="$title" --text="$(gettext "Please select a valid .deb file.")"  --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
 
   continue # Se cancelado, volta ao menu principal
 
@@ -328,11 +361,11 @@ if [ -n "$arquivo" ]; then
 
   if  xdeb -Sd "$arquivo" | tee -a "$log"; then
 
-    yad --center --info --text="$(gettext "Conversion completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
+    yad --center --info --title="$title" --text="$(gettext "Conversion completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
 
   else
 
-    yad --center --error --text="$(gettext "Error converting package.")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
+    yad --center --error --title="$title" --text="$(gettext "Error converting package.")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
 
   fi
 
@@ -354,7 +387,7 @@ fi
 
 if [[ "$arquivo" != *.deb ]]; then
 
-  yad --error --text="$(gettext "Please select a valid .deb file.")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
+  yad --error --title="$title" --text="$(gettext "Please select a valid .deb file.")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
 
   continue # Se cancelado, volta ao menu principal
 
@@ -364,11 +397,11 @@ fi
 
     if xdeb -S "$arquivo" | tee -a "$log"; then
 
-      yad --center --info --text="$(gettext "Shlibs download completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
+      yad --center --info --title="$title" --text="$(gettext "Shlibs download completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
 
     else
 
-      yad --center --error --text="$(gettext "Error downloading shlibs.")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
+      yad --center --error --title="$title" --text="$(gettext "Error downloading shlibs.")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
 
     fi
 
@@ -400,11 +433,11 @@ fi
 
     if xdeb -Sd "$arquivo" | tee -a "$log"; then
 
-      yad --center --info --text="$(gettext "Conversion with dependencies completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
+      yad --center --info --title="$title" --text="$(gettext "Conversion with dependencies completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
 
     else
 
-      yad --center --error --text="$(gettext "Error converting with dependencies.")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
+      yad --center --error --title="$title" --text="$(gettext "Error converting with dependencies.")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
 
     fi
 
@@ -451,6 +484,7 @@ fi
 
   if [[ "$arquivo" != *.deb ]]; then
     yad --error \
+        --title="$title" \
         --text="$(gettext "Please select a valid .deb file.")" \
         --buttons-layout=center \
         --button="$(gettext "Cancel")":1 \
@@ -460,7 +494,9 @@ fi
 
   [ -n "$arquivo" ] && [ -n "$deps" ] && \
   xdeb --deps="$deps" "$arquivo" | tee -a "$log" && \
-  yad --center --info \
+  yad --center \
+      --info \
+      --title="$title" \
       --text="$(gettext "Conversion completed successfully!")" \
       --buttons-layout=center \
       --button="$(gettext "OK")":0 \
@@ -477,11 +513,11 @@ fi
 
       if xdeb -C | tee -a "$log"; then
 
-         yad  --center --info --text="$(gettext "Temporary files removed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+         yad  --center --info --title="$title" --text="$(gettext "Temporary files removed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
       else
 
-         yad --center --error --text="$(gettext "Error removing temporary files.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+         yad --center --error --title="$title" --text="$(gettext "Error removing temporary files.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
       fi
 
@@ -495,11 +531,11 @@ fi
 
   if xdeb -r | tee -a "$log"; then
 
-    yad --center --info --text="$(gettext "Repodata removed successfully.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+    yad --center --info --title="$title" --text="$(gettext "Repodata removed successfully.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
   else
 
-    yad --center --error --text="$(gettext "Error removing repodata.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+    yad --center --error --title="$title" --text="$(gettext "Error removing repodata.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
   fi
 
@@ -518,7 +554,7 @@ fi
 
 if [[ "$arquivo" != *.deb ]]; then
 
-  yad --error --text="$(gettext "Please select a valid .deb file.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+  yad --error --title="$title" --text="$(gettext "Please select a valid .deb file.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
   continue
 
@@ -529,11 +565,11 @@ if [ -n "$arquivo" ]; then
 
   if xdeb -q "$arquivo" | tee -a "$log"; then
 
-    yad --center --info --text="$(gettext "Extraction completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+    yad --center --info --title="$title" --text="$(gettext "Extraction completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
   else
 
-    yad --center --error --text="$(gettext "Error extracting package.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+    yad --center --error --title="$title" --text="$(gettext "Error extracting package.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
   fi
 
@@ -551,31 +587,23 @@ if ! dir=$(yad --center --title="$(gettext "Select the directory with the files"
 
 fi
 
-
-if [[ "$arquivo" != *.deb ]]; then
-
-  yad --error --text="$(gettext "Please select a valid .deb file.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
-
-  continue # Se cancelado, volta ao menu principal
-
-fi
+  # Verifica se o diretório foi selecionado
 
   if [ -n "$dir" ]; then
 
     if xdeb -b "$dir" | tee -a "$log"; then
 
-      yad --center --info --text="$(gettext "Direct build completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+      yad --center --info --title="$title" --text="$(gettext "Direct build completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
     else
 
-      yad --center --error --text="$(gettext "Error running direct build.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+      yad --center --error --title="$title" --text="$(gettext "Error running direct build.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
     fi
 
   fi
 
   ;;
-
 
 
 
@@ -590,7 +618,7 @@ fi
 
 if [[ "$arquivo" != *.deb ]]; then
 
-  yad --error --text="$(gettext "Please select a valid .deb file.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+  yad --error --title="$title" --text="$(gettext "Please select a valid .deb file.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
   continue # Se cancelado, volta ao menu principal
 
@@ -600,11 +628,11 @@ fi
 
     if xdeb -R "$arquivo" | tee -a "$log"; then
 
-      yad --center --info --text="$(gettext "Conversion completed (no record in repository).")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+      yad --center --info --title="$title" --text="$(gettext "Conversion completed (no record in repository).")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
     else
 
-      yad --center --error --text="$(gettext "Error converting with -R.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+      yad --center --error --title="$title" --text="$(gettext "Error converting with -R.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
     fi
 
@@ -626,7 +654,7 @@ fi
 
 if [[ "$arquivo" != *.deb ]]; then
 
-  yad --error --text="$(gettext "Please select a valid .deb file.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+  yad --error --title="$title" --text="$(gettext "Please select a valid .deb file.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
   continue
 
@@ -637,11 +665,11 @@ if [ -n "$arquivo" ]; then
 
   if  xdeb -m "$arquivo" | tee -a "$log" ; then
 
-    yad --center --info --text="$(gettext "Conversion completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+    yad --center --info --title="$title" --text="$(gettext "Conversion completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
   else
 
-    yad --center --error --text="$(gettext "Error converting package.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+    yad --center --error --title="$title" --text="$(gettext "Error converting package.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
   fi
 
@@ -663,7 +691,7 @@ fi
 
 if [[ "$arquivo" != *.deb ]]; then
 
-  yad --error --text="$(gettext "Please select a valid .deb file.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+  yad --error --title="$title" --text="$(gettext "Please select a valid .deb file.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
   continue
 
@@ -674,11 +702,11 @@ if [ -n "$arquivo" ]; then
 
   if xdeb -I "$arquivo" | tee -a "$log"; then
 
-    yad --center --info --text="$(gettext "Installation completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+    yad --center --info --title="$title" --text="$(gettext "Installation completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
   else
 
-    yad --center --error --text="$(gettext "Error installing package.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+    yad --center --error --title="$title" --text="$(gettext "Error installing package.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
   fi
 
@@ -701,7 +729,7 @@ fi
 
 if [[ "$arquivo" != *.deb ]]; then
 
-  yad --error --text="$(gettext "Please select a valid .deb file.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+  yad --error --title="$title" --text="$(gettext "Please select a valid .deb file.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
   continue # Se cancelado, volta ao menu principal
 
@@ -711,11 +739,11 @@ fi
 
     if xdeb -e "$arquivo" | tee -a "$log"; then
 
-      yad --center --info --text="$(gettext "Empty directories removed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+      yad --center --info --title="$title" --text="$(gettext "Empty directories removed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
     else
 
-      yad --center --error --text="$(gettext "Error removing empty directories.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+      yad --center --error --title="$title" --text="$(gettext "Error removing empty directories.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
     fi
 
@@ -728,9 +756,21 @@ fi
 
      "14") # Mostrar versão do xdeb
 
-      versao=$(xdeb --version 2>&1)
+# Desativa temporariamente o comportamento de abortar
 
-      yad --center --info --text="$(gettext "Versão do xdeb:\n\n$versao")" --buttons-layout=center  --button="$(gettext "OK")":0 2>/dev/null
+# set +e
+
+
+      versao=$(xdeb -version 2>&1 || echo "" 1>/dev/null)
+
+      msg=$(gettext "xdeb version: %s")
+
+      yad --center --info --title="$title" --text="$(printf '%s\n' "$(printf '%s\n' "$msg" | xargs -I{} printf '{}' "$versao")")" --buttons-layout=center  --button="$(gettext "OK")":0  --width="300" --height="100" 2>/dev/null
+
+
+# Ativa novamente
+
+# set -e
 
       ;;
 
@@ -743,14 +783,17 @@ fi
 
        xdeb --help | col -b | sed 's/H2J3J//g' | yad --center  --title="$(gettext "xdeb help")"   --text-info --buttons-layout=center --button="$(gettext "OK")":0  --width="1200" --height="800" 2>/dev/null
 
-      # col -b remove caracteres de backspace e formatação de terminal.
+       # col -b remove caracteres de backspace e formatação de terminal.
 
 
 # Se aparecer texto truncado ou com scroll lateral, você pode adicionar fold -s -w 80 para quebrar as linhas longas:
 
-man xdeb | col -b | fold -s -w 80 | yad --center \
+# man xdeb
+
+man -l "/usr/share/man/$(echo "$LANG" | cut -d. -f1)/man1/xdeb.1" | col -b | fold -s -w 80 | yad --center \
     --title="$(gettext "xdeb manual")" \
     --text-info \
+    --buttons-layout=center \
     --button="$(gettext "OK")":0 \
     --width="900" --height="800" 2>/dev/null
 
@@ -773,7 +816,7 @@ fi
 
 if [[ "$arquivo" != *.deb ]]; then
 
-  yad --error --text="$(gettext "Please select a valid .deb file.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+  yad --error --title="$title" --text="$(gettext "Please select a valid .deb file.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
   continue # Se cancelado, volta ao menu principal
 
@@ -783,11 +826,11 @@ fi
 
     if xdeb -Sde "$arquivo" | tee -a "$log"; then
 
-      yad --center --info --text="$(gettext "Conversion with dependencies completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+      yad --center --info --title="$title" --text="$(gettext "Conversion with dependencies completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
     else
 
-      yad --center --error --text="$(gettext "Error converting with dependencies.")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
+      yad --center --error --title="$title" --text="$(gettext "Error converting with dependencies.")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
 
     fi
 

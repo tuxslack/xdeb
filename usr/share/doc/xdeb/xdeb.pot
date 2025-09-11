@@ -725,4 +725,30 @@ msgid "The following commands are not installed:\n\n%s\n\nYou can install them w
 msgstr ""
 
 
+#: ⁨xdeb-gui.sh⁩
+msgid "xdeb version: %s"
+msgstr ""
+
+
+#: ⁨xdeb
+msgid "grep does NOT support -P."
+msgstr ""
+
+#: ⁨xdeb
+msgid "This script requires bash. Exiting..."
+msgstr ""
+
+#: ⁨xdeb
+msgid "Error: Destination directory '%s' already exists and is NOT empty."
+msgstr ""
+
+#: ⁨xdeb
+msgid "Error: No read/write permission on: %s\n\nTip: Run the command with administrator privileges (e.g. using sudo), or change the directory permissions:\n"
+msgstr ""
+
+
+#: ⁨xdeb
+msgid "or"
+msgstr ""
+
 

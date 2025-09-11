@@ -727,3 +727,30 @@ msgid "The following commands are not installed:\n\n%s\n\nYou can install them w
 msgstr "Os seguintes comandos não estão instalados:\n\n%s\n\nVocê pode instalá-los com:\n\n  sudo xbps-install -Sy %s"
 
 
+#: ⁨xdeb-gui.sh⁩
+msgid "xdeb version: %s"
+msgstr "Versão do xdeb: %s"
+
+
+
+#: ⁨xdeb
+msgid "grep does NOT support -P."
+msgstr "grep NÃO tem suporte a -P."
+
+#: ⁨xdeb
+msgid "This script requires bash. Exiting..."
+msgstr "Este script requer bash. Saindo..."
+
+#: ⁨xdeb
+msgid "Error: Destination directory '%s' already exists and is NOT empty."
+msgstr "Erro: diretório de destino '%s' já existe e NÃO está vazio."
+
+
+#: ⁨xdeb
+msgid "Error: No read/write permission on: %s\n\nTip: Run the command with administrator privileges (e.g. using sudo), or change the directory permissions:\n"
+msgstr "Erro: Sem permissão de leitura/gravação em: %s\n\nDica: Execute o comando com privilégios de administrador (por exemplo, usando sudo) ou altere as permissões do diretório:\n"
+
+#: ⁨xdeb
+msgid "or"
+msgstr "ou"
+

@@ -30,6 +30,10 @@
 
 
 
+# - Falta validar o pacote .deb no script usando o Void Linux.
+
+
+
 # Evite usar 'clear' aqui, pois pode gerar caracteres indesejados em interfaces gráficas (yad).
 
 clear
@@ -97,7 +101,31 @@ fi
 
 # Lista de comandos a verificar
 
-comandos=("notify-send" "gettext")
+
+
+
+# O comando col (usado geralmente para processar backspaces e formatação em man pages e 
+# saída de nroff, etc.) faz parte do pacote util-linux no Void Linux.
+
+    if ! command -v "col" &> /dev/null; then
+
+        sudo xbps-install -Sy util-linux | tee -a "$log"
+
+    fi
+
+
+# Para instalar man pages
+
+# O man verifica a variável de ambiente LANG ou LC_MESSAGES para determinar o idioma.
+
+    if ! command -v "man" &> /dev/null; then
+
+        sudo xbps-install -Sy man-db man-pages less | tee -a "$log"
+
+    fi
+
+
+comandos=("notify-send.sh" "gettext")
 
 # Lista para armazenar comandos faltando
 
@@ -163,7 +191,7 @@ if ! command -v xdeb &>/dev/null; then
   --width="300" \
   2>/dev/null
 
-  #exit 1
+  exit 1
 
 fi
 
@@ -182,7 +210,7 @@ mg=$(printf '%s' "$(printf "$message_template" "$log")")
 
 # Se confia que message_template conterá apenas um %s, e controla ou revisou a tradução, pode manter o código e suprimir o aviso com um comentário shellcheck
 
-notify-send -i dialog-information -t 20000 "xdeb" "$mg"
+notify-send -i dialog-information -t 20000 "xdeb" "$mg\n\n$ sudo mkdir -p /opt/binpkgs\n$ sudo chmod -R 777 /opt/binpkgs"
 
 
 
@@ -790,13 +818,41 @@ fi
 
 # man xdeb
 
-man -l "/usr/share/man/$(echo "$LANG" | cut -d. -f1)/man1/xdeb.1" | col -b | fold -s -w 80 | yad --center \
+LANG_DIR=$(echo "$LANG" | cut -d. -f1)
+
+
+# Verificando se o manual existe
+
+if [ -f "/usr/share/man/${LANG_DIR}/man1/xdeb.1" ]; then
+    MANPAGE="/usr/share/man/${LANG_DIR}/man1/xdeb.1"
+
+elif [ -f "/usr/share/man/${LANG_DIR}/man1/xdeb.1.gz" ]; then
+    MANPAGE="/usr/share/man/${LANG_DIR}/man1/xdeb.1.gz"
+
+elif [ -f "/usr/share/man/man1/xdeb.1.gz" ]; then
+    MANPAGE="/usr/share/man/man1/xdeb.1.gz"
+
+elif [ -f "/usr/share/man/man1/xdeb.1" ]; then
+    MANPAGE="/usr/share/man/man1/xdeb.1"
+
+else
+
+    echo -e "\n❌ $(gettext "Man page for xdeb not found.")\n"
+
+    notify-send -i dialog-information -t 20000 "xdeb" "$(gettext "Man page for xdeb not found.")"
+
+    continue
+
+fi
+
+
+
+man -l "$MANPAGE" 2>/dev/null | col -b | fold -s -w 80  | yad --center \
     --title="$(gettext "xdeb manual")" \
     --text-info \
     --buttons-layout=center \
     --button="$(gettext "OK")":0 \
     --width="900" --height="800" 2>/dev/null
-
 
       ;;
 

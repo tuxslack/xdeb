@@ -199,6 +199,17 @@ This could cause side effects if another function or part of the script uses the
 long_desc="$(grep -Po -m1 -z "Description:[ \t\n]*\K.*" "${XDEB_DATADIR}/control" | tr '\0' '\n')"
 
 
+* Fixed man: /usr/share/man/en_US/man1/xdeb.1: BADARG: Invalid command line argument: No such file or directory.
+
+
+* The file /usr/share/doc/xdeb/"Packages generated with xdeb".ods, contains a list of packages created by xdeb and that are working.
+
+
+* Added yad as a dependency.
+
+
+* Created the installer.sh script to facilitate the installation of xdeb on Void Linux.
+
 ------------------------------------------------------------------------------------------
 
 Jun 10, 2024   toluschr <https://github.com/toluschr>

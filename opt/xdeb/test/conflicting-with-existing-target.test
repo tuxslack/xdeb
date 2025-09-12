@@ -2,6 +2,21 @@
 
 # O Void Linux usa /bin/sh por padrão.
 
+# Cria um pacote .deb com estrutura de diretórios simulando /usr/lib e /lib.
+
+# Usa a ferramenta xdeb para convertê-lo ao formato Void Linux.
+
+# Testa se o empacotamento e a fusão de diretórios (/lib → /usr/lib) estão funcionando 
+# corretamente.
+
+# Usa mensagens internacionalizadas para facilitar tradução da saída.
+
+
+# 📎 Notas Adicionais
+
+# O script não define as funções fail nem as variáveis xdeb_path e XDEB_PKGROOT, então 
+# depende de contexto externo.
+
 clear
 
 # ----------------------------------------------------------------------------------------
@@ -15,11 +30,16 @@ export TEXTDOMAINDIR=/usr/share/locale
 
 
 function build() {
+
+    # Cria dois diretórios:
+
     mkdir -p usr/lib/dir
     mkdir -p lib/dir
 
     touch usr/lib/dir/usr_lib_dir
     touch lib/dir/lib_dir
+
+# Cria um arquivo control (metadados do pacote .deb) com nome, versão e descrição traduzíveis via gettext.
 
     tee control >/dev/null <<EOF
 Package: $(gettext "conflicting-with-existing-target")
@@ -29,16 +49,51 @@ Maintainer: $(gettext "none")
 Description: $(gettext "none")
 EOF
 
+    # Empacotamento:
+
     tar -cf control.tar control
     tar -cf data.tar */
+
+    # Empacota os metadados e os arquivos simulados em um .deb chamado package.deb.
+
     ar -rc package.deb control.tar data.tar
+
 }
 
+
+# Função run — testa se o pacote é manipulado corretamente
+
 function run() {
+
+    # Executa o xdeb (ferramenta de conversão de pacotes .deb para o formato xbps do Void Linux), passando o .deb criado.
+
+    # Se falhar, imprime "build failed" (traduzível).
+
     "${xdeb_path}" -Sf package.deb || fail "$(gettext "build failed")"
+
+
+    # Verificação do conteúdo do pacote convertido:
+
+    # Usa xbps-query para listar os arquivos contidos no pacote gerado.
+
+    # Armazena os arquivos em files.
 
     files="$(xbps-query --repository="${XDEB_PKGROOT}/binpkgs" -f conflicting-with-existing-target 2>&1)"
 
+
+    # Testes de consistência:
+
+    # Verifica se os arquivos esperados estão no lugar certo.
+
+
+    # Se /usr/lib/dir/usr_lib_dir não estiver presente → erro: o diretório foi modificado indevidamente.
+
     echo "${files}" | grep "/usr/lib/dir/usr_lib_dir" >/dev/null 2>&1 || fail "$(gettext "old /usr/lib/dir modified")"
+
+
+    # Se /lib/dir/lib_dir não tiver sido movido ou fundido para /usr/lib/dir/ → erro.
+
     echo "${files}" | grep "/usr/lib/dir/lib_dir" >/dev/null 2>&1 || fail "$(gettext "/lib/dir not merged with /usr/lib/dir")"
 }
+
+

@@ -704,6 +704,7 @@ msgstr ""
 
 
 #: ⁨xdeb-gui.sh⁩
+#: instalador.sh
 msgid "Missing dependencies"
 msgstr ""
 
@@ -747,6 +748,60 @@ msgstr ""
 
 #: ⁨xdeb
 msgid "or"
+msgstr ""
+
+
+#: ⁨xdeb-gui.sh⁩
+msgid "Man page for xdeb not found."
+msgstr ""
+
+
+
+
+#: instalador.sh
+
+msgid "Yad is not installed...\n\nInstall with: sudo xbps-install -Sy yad"
+msgstr ""
+
+#: instalador.sh
+
+msgid "The following commands are not installed:\n\n%s\n\nPlease install them before continuing."
+msgstr ""
+
+
+#: instalador.sh
+
+msgid "Installing files to %s..."
+msgstr ""
+
+
+#: instalador.sh
+
+msgid "Installation complete."
+msgstr ""
+
+
+#: instalador.sh
+
+msgid "Uninstaller"
+msgstr ""
+
+
+#: instalador.sh
+
+msgid "Removing file %s..."
+msgstr ""
+
+
+#: instalador.sh
+
+msgid "Uninstallation complete."
+msgstr ""
+
+
+#: instalador.sh
+
+msgid "Usage: %s {install|uninstall}"
 msgstr ""
 
 

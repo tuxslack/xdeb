@@ -4,6 +4,14 @@
 
 clear
 
+
+# Baixar o Steam
+
+# Empacotar para Void Linux
+
+# Mostrar os arquivos do pacote convertido
+
+
 # ----------------------------------------------------------------------------------------
 
 # Internacionalização com gettext
@@ -14,13 +22,48 @@ export TEXTDOMAINDIR=/usr/share/locale
 # ----------------------------------------------------------------------------------------
 
 
+# 🏗️ Função build
+
+# Usa curl para baixar o pacote .deb mais recente do Steam.
+
+# Salva o pacote localmente como package.deb.
+
 function build() {
+
     curl -o package.deb http://repo.steampowered.com/steam/archive/stable/steam_latest.deb
+
 }
+
+
+# 🚀 Função run
+
+# Executa o binário xdeb, que converte o .deb para o formato do Void Linux.
+
+# A string de opções -Sedfi provavelmente significa:
+
+# Letra 	    Significado
+
+# S         Criar estrutura do pacote
+# e         Extrair dados
+# d         Criar diretórios temporários
+# f         Forçar alguma operação
+# i         Instalar ou gerar o pacote .xbps
 
 function run() {
+
     "${xdeb_path}" -Sedfi package.deb
+
     xbps-query --repository="${XDEB_PKGROOT}/binpkgs" -f steam-launcher
 
+# Usa o comando xbps-query (do Void Linux) para:
+
+# Listar os arquivos contidos no pacote convertido chamado steam-launcher.
+
+# A flag -f significa "files" (arquivos incluídos no pacote).
+
+
     # fail "$(gettext "unimplemented")"
+
 }
+
+

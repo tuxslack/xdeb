@@ -708,6 +708,7 @@ msgstr "Cancelar"
 
 
 #: ⁨xdeb-gui.sh⁩
+#: instalador.sh
 msgid "Missing dependencies"
 msgstr "Dependências ausentes"
 
@@ -753,4 +754,59 @@ msgstr "Erro: Sem permissão de leitura/gravação em: %s\n\nDica: Execute o com
 #: ⁨xdeb
 msgid "or"
 msgstr "ou"
+
+
+#: ⁨xdeb-gui.sh⁩
+msgid "Man page for xdeb not found."
+msgstr "Página de manual para xdeb não encontrada."
+
+
+
+
+#: instalador.sh
+
+msgid "Yad is not installed...\n\nInstall with: sudo xbps-install -Sy yad"
+msgstr "O yad não esta instalado...\n\nInstale com: sudo xbps-install -Sy yad"
+
+#: instalador.sh
+
+msgid "The following commands are not installed:\n\n%s\n\nPlease install them before continuing."
+msgstr "Os seguintes comandos não estão instalados:\n\n%s\n\nPor favor, instale-os antes de continuar."
+
+
+#: instalador.sh
+
+msgid "Installing files to %s..."
+msgstr "Instalando arquivos em %s..."
+
+
+#: instalador.sh
+
+msgid "Installation complete."
+msgstr "Instalação concluída."
+
+
+#: instalador.sh
+
+msgid "Uninstaller"
+msgstr "Desinstalador"
+
+
+#: instalador.sh
+
+msgid "Removing file %s..."
+msgstr "Removendo arquivo %s..."
+
+
+#: instalador.sh
+
+msgid "Uninstallation complete."
+msgstr "Desinstalação concluída."
+
+
+#: instalador.sh
+
+msgid "Usage: %s {install|uninstall}"
+msgstr "Uso: %s {instalar|desinstalar}"
+
 

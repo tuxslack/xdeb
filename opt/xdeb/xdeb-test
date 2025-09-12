@@ -20,6 +20,9 @@ function fail() {
 # splitting arguments desired
 unset $(env | grep XDEB_ | sed 's/^\([^=]*\)=.*$/\1/g')
 
+
+# Define variáveis de caminho
+
 xdeb_dir="$(dirname -- "$(realpath -- "${0}")")"
 test_dir="${xdeb_dir}/test"
 

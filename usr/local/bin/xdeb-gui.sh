@@ -125,7 +125,7 @@ fi
     fi
 
 
-comandos=("notify-send.sh" "gettext")
+comandos=("notify-send.sh" "gettext" "ar")
 
 # Lista para armazenar comandos faltando
 
@@ -194,6 +194,49 @@ if ! command -v xdeb &>/dev/null; then
   exit 1
 
 fi
+
+# ----------------------------------------------------------------------------------------
+
+
+selecionar_pacote_deb() {
+    local arquivo
+
+    arquivo=$(yad --center \
+        --title="$(gettext "Select the .deb package")" \
+        --file \
+        --file-filter="$(gettext "Debian Packages") | *.deb" \
+        --buttons-layout=center \
+        --button="$(gettext "Cancel")":1 \
+        --button="$(gettext "OK")":0 \
+        --width="900" \
+        --height="800" \
+        2>/dev/null)
+
+    if [ $? -ne 0 ] || [ -z "$arquivo" ]; then
+        return 1  # Cancelado ou nenhum arquivo selecionado
+    fi
+
+    # Validação do .deb usando ar
+    if ar t "$arquivo" | grep -q "debian-binary" && \
+       ar t "$arquivo" | grep -q "control.tar" && \
+       ar t "$arquivo" | grep -q "data.tar"; then
+
+        echo "$arquivo"  # Retorna o caminho do arquivo válido
+        return 0
+
+    else
+        yad --center --title="$(gettext "Error")" --window-icon=error \
+            --text="❌ $(gettext "The selected file does not appear to be a valid .deb package.")" \
+            --button="$(gettext "OK")":0
+        return 1
+    fi
+}
+
+
+
+
+#   continue # Se cancelado, volta ao menu principal
+
 
 # ----------------------------------------------------------------------------------------
 
@@ -302,6 +345,7 @@ if ! opcao=$(yad \
     FALSE "14" "$(gettext "Show xdeb version")" \
     FALSE "15" "$(gettext "Show xdeb help")" \
     FALSE "16" "$(gettext "Converts using the most commonly used option (xdeb -Sde)")" \
+    FALSE "17" "$(gettext "(xdeb -rb)")" \
     FALSE  "0" "$(gettext "Exit")" \
     --buttons-layout=center \
     --button="$(gettext "Cancel")":1 \
@@ -330,11 +374,10 @@ opcao="$(echo "$opcao" | cut -d"|" -f2)"
 # Rodar xdeb sem argumentos de opção (apenas passando o .deb) seria o comportamento padrão.
 
 
-if ! arquivo=$(yad --center --title="$(gettext "Select the .deb package")" --file --buttons-layout=center  --button="$(gettext "Cancel")":1 --button="$(gettext "OK")":0 2>/dev/null); then
-
-  continue # Se cancelado, volta ao menu principal
-
+if ! arquivo=$(selecionar_pacote_deb); then
+    continue  # Volta ao menu principal se cancelado
 fi
+
 
 
 if [[ "$arquivo" != *.deb ]]; then
@@ -351,7 +394,10 @@ fi
 
 if [ -n "$arquivo" ]; then
 
-  if xdeb "$arquivo" | tee -a "$log"; then
+
+  command xdeb "$arquivo" | tee -a "$log"
+
+  if [ "${PIPESTATUS[0]}" -eq 0 ]; then
 
     yad --center --info --title="$title" --text="$(gettext "Conversion completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
 
@@ -369,10 +415,9 @@ fi
 
      "2") # Conversão com resolução automática de dependências
 
-if ! arquivo=$(yad --center --title="$(gettext "Select the .deb package")" --file --buttons-layout=center --button="$(gettext "Cancel")":1 --button="$(gettext "OK")":0  2>/dev/null); then
 
-  continue # Se cancelado, volta ao menu principal
-
+if ! arquivo=$(selecionar_pacote_deb); then
+    continue  # Volta ao menu principal se cancelado
 fi
 
 
@@ -387,7 +432,10 @@ fi
 
 if [ -n "$arquivo" ]; then
 
-  if  xdeb -Sd "$arquivo" | tee -a "$log"; then
+
+  command xdeb -Sd "$arquivo" | tee -a "$log"
+
+  if [ "${PIPESTATUS[0]}" -eq 0 ]; then
 
     yad --center --info --title="$title" --text="$(gettext "Conversion completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
 
@@ -405,11 +453,11 @@ fi
 
 "3") # Download de dependências (shlibs)
 
-if ! arquivo=$(yad --center --title="$(gettext "Select the .deb package")" --file --buttons-layout=center --button="$(gettext "Cancel")":1 --button="$(gettext "OK")":0 2>/dev/null); then
 
-  continue # Se cancelado, volta ao menu principal
-
+if ! arquivo=$(selecionar_pacote_deb); then
+    continue  # Volta ao menu principal se cancelado
 fi
+
 
 
 
@@ -423,7 +471,10 @@ fi
 
   if [ -n "$arquivo" ]; then
 
-    if xdeb -S "$arquivo" | tee -a "$log"; then
+
+    command xdeb -S "$arquivo" | tee -a "$log"
+
+    if [ "${PIPESTATUS[0]}" -eq 0 ]; then
 
       yad --center --info --title="$title" --text="$(gettext "Shlibs download completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
 
@@ -442,11 +493,11 @@ fi
 
 "4") # Conversão com shlibs + resolução automática
 
-if ! arquivo=$(yad --center --title="$(gettext "Select the .deb package")" --file --buttons-layout=center --button="$(gettext "Cancel")":1 --button="$(gettext "OK")":0); then
 
-  continue # Se cancelado, volta ao menu principal
-
+if ! arquivo=$(selecionar_pacote_deb); then
+    continue  # Volta ao menu principal se cancelado
 fi
+
 
 
 if [[ "$arquivo" != *.deb ]]; then
@@ -459,7 +510,10 @@ fi
 
   if [ -n "$arquivo" ]; then
 
-    if xdeb -Sd "$arquivo" | tee -a "$log"; then
+
+    command xdeb -Sd "$arquivo" | tee -a "$log"
+
+    if [ "${PIPESTATUS[0]}" -eq 0 ]; then
 
       yad --center --info --title="$title" --text="$(gettext "Conversion with dependencies completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
 
@@ -477,14 +531,10 @@ fi
 
 "5") # Adicionar dependências manualmente (--deps)
 
-  arquivo=$(yad --center \
-                --title="$(gettext "Select the .deb package")" \
-                --file \
-                --buttons-layout=center \
-                --button="$(gettext "Cancel")":1 \
-                --button="$(gettext "OK")":0 \
-                2>/dev/null)
 
+if ! arquivo=$(selecionar_pacote_deb); then
+    continue  # Volta ao menu principal se cancelado
+fi
 
 
 # ✔️ Vantagens:
@@ -539,7 +589,10 @@ fi
 
     "6") # Remover arquivos temporários (-C)
 
-      if xdeb -C | tee -a "$log"; then
+
+      command xdeb -C | tee -a "$log"
+
+      if [ "${PIPESTATUS[0]}" -eq 0 ]; then
 
          yad  --center --info --title="$title" --text="$(gettext "Temporary files removed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
@@ -557,7 +610,10 @@ fi
 
 "7") # Remover apenas repodata (rebuild)
 
-  if xdeb -r | tee -a "$log"; then
+
+  command xdeb -r "$arquivo" | tee -a "$log"
+
+  if [ "${PIPESTATUS[0]}" -eq 0 ]; then
 
     yad --center --info --title="$title" --text="$(gettext "Repodata removed successfully.")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
@@ -573,11 +629,11 @@ fi
 
     "8") # Extrair .deb sem montar pacote (-q)
 
-if ! arquivo=$(yad --center --title="$(gettext "Select the .deb package")" --file --buttons-layout=center  --button="$(gettext "Cancel")":1 --button="$(gettext "OK")":0 2>/dev/null); then
 
-  continue  # Se cancelado, volta ao menu principal
-
+if ! arquivo=$(selecionar_pacote_deb); then
+    continue  # Volta ao menu principal se cancelado
 fi
+
 
 
 if [[ "$arquivo" != *.deb ]]; then
@@ -591,7 +647,9 @@ fi
 
 if [ -n "$arquivo" ]; then
 
-  if xdeb -q "$arquivo" | tee -a "$log"; then
+  command xdeb -q "$arquivo" | tee -a "$log"
+
+  if [ "${PIPESTATUS[0]}" -eq 0 ]; then
 
     yad --center --info --title="$title" --text="$(gettext "Extraction completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
@@ -619,7 +677,10 @@ fi
 
   if [ -n "$dir" ]; then
 
-    if xdeb -b "$dir" | tee -a "$log"; then
+
+    command xdeb -b "$arquivo" | tee -a "$log"
+
+    if [ "${PIPESTATUS[0]}" -eq 0 ]; then
 
       yad --center --info --title="$title" --text="$(gettext "Direct build completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
@@ -637,11 +698,11 @@ fi
 
 "10") # Não registrar pacote no repositório
 
-if ! arquivo=$(yad --center --title="$(gettext "Select the .deb package")" --file --buttons-layout=center --button="$(gettext "Cancel")":1 --button="$(gettext "OK")":0 2>/dev/null); then
 
-  continue # Se cancelado, volta ao menu principal
-
+if ! arquivo=$(selecionar_pacote_deb); then
+    continue  # Volta ao menu principal se cancelado
 fi
+
 
 
 if [[ "$arquivo" != *.deb ]]; then
@@ -652,9 +713,13 @@ if [[ "$arquivo" != *.deb ]]; then
 
 fi
 
+
   if [ -n "$arquivo" ]; then
 
-    if xdeb -R "$arquivo" | tee -a "$log"; then
+
+    command xdeb -R "$arquivo" | tee -a "$log"
+
+    if [ "${PIPESTATUS[0]}" -eq 0 ]; then
 
       yad --center --info --title="$title" --text="$(gettext "Conversion completed (no record in repository).")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
@@ -673,11 +738,11 @@ fi
 
     "11") # Adicionar sufixo -32bit ao pacote
 
-if ! arquivo=$(yad --center --title="$(gettext "Select the .deb package")" --file --buttons-layout=center --button="$(gettext "Cancel")":1 --button="$(gettext "OK")":0 2>/dev/null); then
 
-  continue # Se cancelado, volta ao menu principal
-
+if ! arquivo=$(selecionar_pacote_deb); then
+    continue  # Volta ao menu principal se cancelado
 fi
+
 
 
 if [[ "$arquivo" != *.deb ]]; then
@@ -691,7 +756,10 @@ fi
 
 if [ -n "$arquivo" ]; then
 
-  if  xdeb -m "$arquivo" | tee -a "$log" ; then
+
+    command xdeb -m "$arquivo" | tee -a "$log"
+
+  if [ "${PIPESTATUS[0]}" -eq 0 ]; then
 
     yad --center --info --title="$title" --text="$(gettext "Conversion completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
@@ -710,11 +778,11 @@ fi
 
     "12") # Instalar automaticamente após criação (-I)
 
-if ! arquivo=$(yad --center --title="$(gettext "Select the .deb package")" --file --buttons-layout=center --button="$(gettext "Cancel")":1 --button="$(gettext "OK")":0 2>/dev/null); then
 
-  continue  # Se cancelado, volta ao menu principal
-
+if ! arquivo=$(selecionar_pacote_deb); then
+    continue  # Volta ao menu principal se cancelado
 fi
+
 
 
 if [[ "$arquivo" != *.deb ]]; then
@@ -728,7 +796,10 @@ fi
 
 if [ -n "$arquivo" ]; then
 
-  if xdeb -I "$arquivo" | tee -a "$log"; then
+
+    command xdeb -I "$arquivo" | tee -a "$log"
+
+  if [ "${PIPESTATUS[0]}" -eq 0 ]; then
 
     yad --center --info --title="$title" --text="$(gettext "Installation completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
@@ -748,10 +819,9 @@ fi
 
 "13") # Remover diretórios vazios
 
-if ! arquivo=$(yad --center --title="$(gettext "Select the .deb package")" --file --buttons-layout=center --button="$(gettext "Cancel")":1 --button="$(gettext "OK")":0 2>/dev/null); then
 
-  continue # Se cancelado, volta ao menu principal
-
+if ! arquivo=$(selecionar_pacote_deb); then
+    continue  # Volta ao menu principal se cancelado
 fi
 
 
@@ -765,7 +835,11 @@ fi
 
   if [ -n "$arquivo" ]; then
 
-    if xdeb -e "$arquivo" | tee -a "$log"; then
+
+    command xdeb -e "$arquivo" | tee -a "$log"
+
+    if [ "${PIPESTATUS[0]}" -eq 0 ]; then
+
 
       yad --center --info --title="$title" --text="$(gettext "Empty directories removed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
@@ -862,12 +936,10 @@ man -l "$MANPAGE" 2>/dev/null | col -b | fold -s -w 80  | yad --center \
 "16") # Converte usando a opção mais usada (xdeb -Sde)
 
 
-
-if ! arquivo=$(yad --center --title="$(gettext "Select the .deb package")" --file --buttons-layout=center --button="$(gettext "Cancel")":1 --button="$(gettext "OK")":0 2>/dev/null); then
-
-  continue # Se cancelado, volta ao menu principal
-
+if ! arquivo=$(selecionar_pacote_deb); then
+    continue  # Volta ao menu principal se cancelado
 fi
+
 
 
 if [[ "$arquivo" != *.deb ]]; then
@@ -880,20 +952,31 @@ fi
 
   if [ -n "$arquivo" ]; then
 
-    if xdeb -Sde "$arquivo" | tee -a "$log"; then
 
-      yad --center --info --title="$title" --text="$(gettext "Conversion with dependencies completed successfully!")" --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
 
-    else
+command xdeb -Sde "$arquivo" | tee -a "$log"
+if [ "${PIPESTATUS[0]}" -eq 0 ]; then
+    yad --center --info --title="$title" \
+        --text="$(gettext "Conversion with dependencies completed successfully!")" \
+        --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+else
+    yad --center --error --title="$title" \
+        --text="$(gettext "Error converting with dependencies.")" \
+        --buttons-layout=center --button="$(gettext "OK")":0 2>/dev/null
+fi
 
-      yad --center --error --title="$title" --text="$(gettext "Error converting with dependencies.")" --buttons-layout=center --button="$(gettext "OK")":0  2>/dev/null
 
-    fi
 
   fi
 
   ;;
 
+"17") #
+
+      xdeb -rb | tee -a "$log"
+
+      continue # Se cancelado, volta ao menu principal
+  ;;
 
 
     "0" | "") # Sair

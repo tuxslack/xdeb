@@ -6,11 +6,13 @@
 /opt/xdeb/test/sync-quit.test
 /opt/xdeb/xdeb-test
 /usr/local/bin/xdeb-gui.sh
+/usr/local/bin/log
 /usr/local/bin/xdeb
 /usr/share/doc/xdeb/xdeb.pot
 /usr/share/doc/xdeb/README.pt_BR.md
 /usr/share/doc/xdeb/README.en_US.md
 /usr/share/doc/xdeb/ChangeLog
+/usr/share/doc/xdeb/Packages generated with xdeb.ods
 /usr/share/doc/xdeb/xdeb_menu.png
 /usr/share/doc/xdeb/AUTHORS
 /usr/share/locale/pt_BR/LC_MESSAGES/xdeb.po

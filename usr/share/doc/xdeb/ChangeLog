@@ -210,6 +210,59 @@ long_desc="$(grep -Po -m1 -z "Description:[ \t\n]*\K.*" "${XDEB_DATADIR}/control
 
 * Created the installer.sh script to facilitate the installation of xdeb on Void Linux.
 
+
+* Before trying to download something with curl, it's a good idea to check if you have an internet connection.
+
+  function sync_shlibs()
+
+
+* check_missing_libs function (checks for missing libraries before packaging or installing)
+
+
+- Analyze all ELF files in the extracted package ($XDEB_DESTDIR);
+
+- Use ldd to identify missing libraries (=> not found);
+
+- Report problems before creating or installing the .xbps.
+
+
+$  ldd /opt/binpkgs/destdir/usr/share/spotube/spotube | grep -i "not found"
+	libappindicator3.so.1 => not found
+
+
+$ xbps-query -Rs libappindicator
+
+
+* Fixed: "gettext: too many arguments" in function fix_conflict()
+
+
+	# log_info "$(gettext "Moved conflict '%s' -> '%s'"  "${src}" "${dst}") "
+
+    msg="$(gettext "Moved conflict '%s' -> '%s'")"
+    log_info "$(printf "$msg" "${src}" "${dst}")"
+
+
+* Fixed:
+
+    log_info "$(gettext "Install using \`xbps-install -R %s %s \`" | xargs printf "${XDEB_BINPKGS#"${PWD}/"}" "${out}")"
+
+    Error:
+
+    printf: warning: ignoring excess arguments starting with "xxxxx-2.21.4.3_1"
+
+    Changed to:
+
+    msg="$(gettext "Install using \`xbps-install -R %s %s \`")"
+    log_info "$(printf "$msg" "${XDEB_BINPKGS#"${PWD}/"}" "$out")"
+
+
+NOTICE:
+
+Void Linux utilities such as xbps-install, xbps-query, and xbps-remove do not have native 
+support for translation into Brazilian Portuguese (or any other language). They were 
+developed with simplicity and performance in mind, and their messages are encoded directly 
+in English in the source code, without integration with localization systems such as gettext.
+
 ------------------------------------------------------------------------------------------
 
 Jun 10, 2024   toluschr <https://github.com/toluschr>

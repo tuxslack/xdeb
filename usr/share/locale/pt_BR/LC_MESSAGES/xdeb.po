@@ -810,3 +810,267 @@ msgid "Usage: %s {install|uninstall}"
 msgstr "Uso: %s {instalar|desinstalar}"
 
 
+#: ⁨xdeb
+msgid "No internet connection. Unable to sync shlibs."
+msgstr "Sem conexão com a internet. Não foi possível sincronizar shlibs."
+
+
+
+#: ⁨xdeb
+msgid "Errors occurred earlier. Aborting before package creation or installation."
+msgstr "Erros ocorreram anteriormente. Interrupção antes da criação ou instalação do pacote."
+
+
+#: ⁨xdeb
+msgid "Warning:"
+msgstr "Aviso:"
+
+#: ⁨xdeb
+msgid "One or more required shared libraries are missing."
+msgstr "Uma ou mais bibliotecas compartilhadas obrigatórias estão ausentes."
+
+#: ⁨xdeb
+msgid "You may need to install the appropriate packages or adjust your dependencies."
+msgstr "Você pode precisar instalar os pacotes apropriados ou ajustar suas dependências."
+
+#: ⁨xdeb
+msgid "Use `--deps=...` or install missing libraries before proceeding."
+msgstr "Use `--deps=...` ou instale as bibliotecas ausentes antes de continuar."
+
+#: ⁨xdeb
+msgid "Missing libraries found. Aborting package creation to avoid broken installs."
+msgstr "Bibliotecas ausentes encontradas. Abortando a criação do pacote para evitar instalações interrompidas."
+
+
+
+
+#: ⁨xdeb
+msgid "Error installing package: %s"
+msgstr "Erro ao instalar o pacote: %s"
+
+
+#: ⁨xdeb
+msgid "Missing library:"
+msgstr "Biblioteca ausente:"
+
+
+
+#: ⁨xdeb
+msgid "not found"
+msgstr "não encontrado"
+
+
+
+#: ⁨xdeb
+msgid "in binary"
+msgstr "em binário"
+
+
+#: ⁨xdeb
+msgid ""
+"🧩 Workarounds:\n"
+"\n"
+" * Repackage the program as a Void package (.xbps) with adjusted dependencies.\n"
+"\n"
+"\n"
+"In Void Linux, you have several ways to install programs, each with its own advantages depending on your usage style and needs. Here are the main ones:\n"
+"\n"
+"\n"
+"1. Using the xbps package manager\n"
+"\n"
+"xbps-install -S package-name\n"
+"\n"
+"\n"
+"2. Compiling with xtools (build from source)\n"
+"\n"
+"xbps-install -S xtools\n"
+"\n"
+"git clone https://github.com/void-linux/void-packages\n"
+"cd void-packages\n"
+"./xbps-src binary-bootstrap\n"
+"\n"
+"./xbps-src pkg package-name\n"
+"xbps-install --repository=hostdir/binpkgs package-name\n"
+"\n"
+"\n"
+"3. Install .xbps packages manually using xbps-install\n"
+"\n"
+"If you have a local .xbps package.\n"
+"\n"
+"\n"
+"4. Flatpak (sandboxed apps)\n"
+"\n"
+"Flatpak works well in Void and allows you to install universal apps:\n"
+"\n"
+"xbps-install -S flatpak\n"
+"\n"
+"flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo\n"
+"\n"
+"flatpak install flathub name.of.app\n"
+"\n"
+"5. Docker (containers)\n"
+"\n"
+"xbps-install -S docker\n"
+"\n"
+"\n"
+"6.AppImage\n"
+"\n"
+"chmod +x program.AppImage\n"
+"./programa.AppImage\n"
+"\n"
+"\n"
+"7. Manual: compile from source\n"
+"\n"
+"git clone https://github.com/algo/projeto.git\n"
+"project cd\n"
+"make && sudo make install"
+
+msgstr ""
+"🧩 Soluções alternativas:\n"
+"\n"
+"   * Reempacotar o programa como um pacote Void (.xbps) com dependências ajustadas.\n"
+"\n"
+"\n"
+"No Void Linux, você tem várias formas de instalar programas, cada uma com suas vantagens dependendo do seu estilo de uso e necessidade. Aqui estão as principais:\n"
+"\n"
+"\n"
+"1. Usando o gerenciador de pacotes xbps\n"
+"\n"
+"xbps-install -S nome-do-pacote\n"
+"\n"
+"\n"
+"2. Compilando com xtools (build do source)\n"
+"\n"
+"xbps-install -S xtools\n"
+"\n"
+"git clone https://github.com/void-linux/void-packages\n"
+"cd void-packages\n"
+"./xbps-src binary-bootstrap\n"
+"\n"
+"./xbps-src pkg nome-do-pacote\n"
+"xbps-install --repository=hostdir/binpkgs nome-do-pacote\n"
+"\n"
+"\n"
+"3. Instalar pacotes .xbps manualmente usando o xbps-install\n"
+"\n"
+"Se você tiver um pacote .xbps local.\n"
+"\n"
+"\n"
+"4. Flatpak (sandboxed apps)\n"
+"\n"
+"Flatpak funciona bem no Void e permite instalar apps universais:\n"
+"\n"
+"xbps-install -S flatpak\n"
+"\n"
+"flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo\n"
+"\n"
+"flatpak install flathub nome.do.app\n"
+"\n"
+"5. Docker (containers)\n"
+"\n"
+"xbps-install -S docker\n"
+"\n"
+"\n"
+"6. AppImage\n"
+"\n"
+"chmod +x programa.AppImage\n"
+"./programa.AppImage\n"
+"\n"
+"\n"
+"7. Manual: compilar do código-fonte\n"
+"\n"
+"git clone https://github.com/algo/projeto.git\n"
+"cd projeto\n"
+"make && sudo make install"
+
+
+
+
+#: ⁨instalador.sh
+msgid "Error removing"
+msgstr "Erro ao remover"
+
+
+#: instalador.sh
+msgid "Successfully removed"
+msgstr "Removido com sucesso"
+
+#: instalador.sh
+msgid "No lock file found in"
+msgstr "Nenhum arquivo de lock encontrado em"
+
+#: instalador.sh
+msgid "Ending LibreOffice processes..."
+msgstr "Finalizando processos do LibreOffice..."
+
+#: ⁨instalador.sh
+msgid "Lock file(s) found at %s"
+msgstr "Arquivo(s) de lock encontrado(s) em %s"
+
+#: instalador.sh
+msgid "Removendo lock file: %s"
+msgstr "Removendo arquivo de bloqueio: %s"
+
+
+#: xdeb-gui.sh
+msgid "Debian Packages"
+msgstr "Pacotes Debian"
+
+
+#: xdeb
+msgid "Error: Package name not found in control file."
+msgstr "Erro: Nome do pacote não encontrado no arquivo control."
+
+
+#: xdeb
+msgid "Missing or incorrectly formatted 'Version' field. Valid example: Version: 1.0"
+msgstr "Campo 'Version' ausente ou mal formatado. Exemplo válido: Version: 1.0"
+
+
+
+#: xdeb
+msgid "Error: Field 'Architecture' not found in control file."
+msgstr "Erro: Campo 'Architecture' não encontrado no arquivo control."
+
+
+#: xdeb
+msgid "Invalid 'Architecture' value:"
+msgstr "Valor de 'Architecture' inválido:"
+
+
+
+#: xdeb
+msgid "Use one of the following: all, amd64, i386, arm64, armhf."
+msgstr "Use um dos seguintes: all, amd64, i386, arm64, armhf."
+
+
+
+#: xdeb
+msgid "Error: Field 'Maintainer' not found or empty in control file."
+msgstr "Erro: Campo 'Maintainer' não encontrado ou vazio no arquivo control."
+
+
+#: xdeb
+msgid "Invalid 'Maintainer' format. Use: Name <email@domain>"
+msgstr "Formato de 'Maintainer' inválido. Use: Nome <email@dominio>"
+
+
+
+
+#: xdeb-gui.sh
+msgid "The selected file does not appear to be a valid .deb package."
+msgstr "O arquivo selecionado não parece ser um pacote .deb válido."
+
+
+#: xdeb-gui.sh
+msgid ".deb file appears valid."
+msgstr "Arquivo .deb parece válido."
+
+
+#: xdeb-gui.sh
+msgid "Invalid .deb file!"
+msgstr "Arquivo .deb inválido!"
+
+
+
+

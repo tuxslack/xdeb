@@ -805,3 +805,265 @@ msgid "Usage: %s {install|uninstall}"
 msgstr ""
 
 
+#: ⁨xdeb
+msgid "No internet connection. Unable to sync shlibs."
+msgstr ""
+
+
+#: ⁨xdeb
+msgid "Errors occurred earlier. Aborting before package creation or installation."
+msgstr ""
+
+
+
+
+#: ⁨xdeb
+msgid "Warning:"
+msgstr ""
+
+#: ⁨xdeb
+msgid "One or more required shared libraries are missing."
+msgstr ""
+
+#: ⁨xdeb
+msgid "You may need to install the appropriate packages or adjust your dependencies."
+msgstr ""
+
+#: ⁨xdeb
+msgid "Use `--deps=...` or install missing libraries before proceeding."
+msgstr ""
+
+#: ⁨xdeb
+msgid "Missing libraries found. Aborting package creation to avoid broken installs."
+msgstr ""
+
+
+
+
+#: ⁨xdeb
+msgid "Error installing package: %s"
+msgstr ""
+
+
+#: ⁨xdeb
+msgid "Missing library:"
+msgstr ""
+
+
+
+#: ⁨xdeb
+msgid "not found"
+msgstr ""
+
+
+
+#: ⁨xdeb
+msgid "in binary"
+msgstr ""
+
+
+#: ⁨xdeb
+msgid ""
+"🧩 Workarounds:\n"
+"\n"
+" * Repackage the program as a Void package (.xbps) with adjusted dependencies.\n"
+"\n"
+"\n"
+"In Void Linux, you have several ways to install programs, each with its own advantages depending on your usage style and needs. Here are the main ones:\n"
+"\n"
+"\n"
+"1. Using the xbps package manager\n"
+"\n"
+"xbps-install -S package-name\n"
+"\n"
+"\n"
+"2. Compiling with xtools (build from source)\n"
+"\n"
+"xbps-install -S xtools\n"
+"\n"
+"git clone https://github.com/void-linux/void-packages\n"
+"cd void-packages\n"
+"./xbps-src binary-bootstrap\n"
+"\n"
+"./xbps-src pkg package-name\n"
+"xbps-install --repository=hostdir/binpkgs package-name\n"
+"\n"
+"\n"
+"3. Install .xbps packages manually using xbps-install\n"
+"\n"
+"If you have a local .xbps package.\n"
+"\n"
+"\n"
+"4. Flatpak (sandboxed apps)\n"
+"\n"
+"Flatpak works well in Void and allows you to install universal apps:\n"
+"\n"
+"xbps-install -S flatpak\n"
+"\n"
+"flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo\n"
+"\n"
+"flatpak install flathub name.of.app\n"
+"\n"
+"5. Docker (containers)\n"
+"\n"
+"xbps-install -S docker\n"
+"\n"
+"\n"
+"6.AppImage\n"
+"\n"
+"chmod +x program.AppImage\n"
+"./programa.AppImage\n"
+"\n"
+"\n"
+"7. Manual: compile from source\n"
+"\n"
+"git clone https://github.com/algo/projeto.git\n"
+"project cd\n"
+"make && sudo make install"
+
+msgstr ""
+""
+"\n"
+""
+"\n"
+"\n"
+""
+"\n"
+"\n"
+""
+"\n"
+""
+"\n"
+"\n"
+""
+"\n"
+"xbps-install -S xtools\n"
+"\n"
+"git clone https://github.com/void-linux/void-packages\n"
+"cd void-packages\n"
+"./xbps-src binary-bootstrap\n"
+"\n"
+"./xbps-src pkg nome-do-pacote\n"
+"xbps-install --repository=hostdir/binpkgs nome-do-pacote\n"
+"\n"
+"\n"
+""
+"\n"
+""
+"\n"
+"\n"
+""
+"\n"
+""
+"\n"
+"xbps-install -S flatpak\n"
+"\n"
+"flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo\n"
+"\n"
+"flatpak install flathub nome.do.app\n"
+"\n"
+""
+"\n"
+"xbps-install -S docker\n"
+"\n"
+"\n"
+"6. AppImage\n"
+"\n"
+"chmod +x programa.AppImage\n"
+"./programa.AppImage\n"
+"\n"
+"\n"
+""
+"\n"
+"git clone https://github.com/algo/projeto.git\n"
+"cd projeto\n"
+"make && sudo make install"
+
+
+
+#: ⁨instalador.sh
+msgid "Error removing"
+msgstr ""
+
+
+#: instalador.sh
+msgid "Successfully removed"
+msgstr ""
+
+#: instalador.sh
+msgid "No lock file found in"
+msgstr ""
+
+#: instalador.sh
+msgid "Ending LibreOffice processes..."
+msgstr ""
+
+#: ⁨instalador.sh
+msgid "Lock file(s) found at %s"
+msgstr ""
+
+#: instalador.sh
+msgid "Removendo lock file: %s"
+msgstr ""
+
+
+#: xdeb-gui.sh
+msgid "Debian Packages"
+msgstr ""
+
+
+#: xdeb
+msgid "Error: Package name not found in control file."
+msgstr ""
+
+
+
+#: xdeb
+msgid "Missing or incorrectly formatted 'Version' field. Valid example: Version: 1.0"
+msgstr ""
+
+
+
+#: xdeb
+msgid "Error: Field 'Architecture' not found in control file."
+msgstr ""
+
+
+#: xdeb
+msgid "Invalid 'Architecture' value:"
+msgstr ""
+
+
+
+#: xdeb
+msgid "Use one of the following: all, amd64, i386, arm64, armhf."
+msgstr ""
+
+
+
+#: xdeb
+msgid "Error: Field 'Maintainer' not found or empty in control file."
+msgstr ""
+
+
+#: xdeb
+msgid "Invalid 'Maintainer' format. Use: Name <email@domain>"
+msgstr ""
+
+
+#: xdeb-gui.sh
+msgid "The selected file does not appear to be a valid .deb package."
+msgstr ""
+
+
+#: xdeb-gui.sh
+msgid ".deb file appears valid."
+msgstr ""
+
+
+#: xdeb-gui.sh
+msgid "Invalid .deb file!"
+msgstr ""
+
+
+

@@ -116,6 +116,71 @@ instalar() {
         # shellcheck disable=SC2059
         message=$(printf "$message_template" "$DEST_DIR")
 
+        echo "$message"
+
+# ----------------------------------------------------------------------------------------
+
+# Verificar se contem arquivos de lock do LibreOffice na pasta usr/share/doc/xdeb antes de 
+# instalar.
+
+
+# Diretório a verificar
+DIR="usr/share/doc/xdeb"
+
+# Arquivos de lock encontrados
+LOCK_FILES=("$DIR"/.~lock.*#)
+
+# Verifica se há arquivos de lock
+if ls "${LOCK_FILES[@]}" &>/dev/null; then
+
+        message_template="$(gettext "Lock file(s) found at %s")"
+
+        # shellcheck disable=SC2059
+        message=$(printf "$message_template" "$DIR")
+
+        echo "$message"
+
+
+    # Finaliza o LibreOffice
+    echo -e "\nEnding LibreOffice processes...\n"
+    pkill -f libreoffice
+
+    # Aguarda um momento para garantir que os processos sejam encerrados
+    sleep 2
+
+    # Tenta remover os arquivos de lock
+    for lock in "${LOCK_FILES[@]}"; do
+        if [ -e "$lock" ]; then
+
+
+            message_template="$(gettext "Removendo lock file: %s")"
+
+            # shellcheck disable=SC2059
+            message=$(printf "$message_template" "$lock")
+
+            echo "$message"
+
+            rm -f "$lock"
+
+            if [ $? -eq 0 ]; then
+                echo "$(gettext "Successfully removed"): $lock"
+            else
+                echo "$(gettext "Error removing"): $lock"
+            fi
+        fi
+    done
+
+else
+
+    echo -e "\n$(gettext "No lock file found in"): $DIR \n"
+
+fi
+
+
+# ----------------------------------------------------------------------------------------
+
+
+
 # Desinstalação:
 
 # Você pode usar o arquivo desinstalar.txt para remove os arquivos e pasta deste pacote.
@@ -149,7 +214,7 @@ sudo rsync -av  --exclude='instalador.sh' --exclude='desinstalar.txt' --exclude=
     # Você está usando echo para exibir a saída do gettext, mas isso é desnecessário — gettext já imprime o texto diretamente.
 
     # shellcheck disable=SC2005
-    echo "$(gettext "Installation complete.")"
+    echo -e "\n$(gettext "Installation complete.") \n"
 }
 
 
@@ -177,7 +242,7 @@ while read -r file; do
 done < desinstalar.txt
 
     # shellcheck disable=SC2005
-    echo "$(gettext "Uninstallation complete.")"
+    echo -e "\n$(gettext "Uninstallation complete.") \n"
 }
 
 # ----------------------------------------------------------------------------------------
@@ -194,8 +259,11 @@ case "$1" in
     *)
 
         message_template="$(gettext "Usage: %s {install|uninstall}")"
+
         # shellcheck disable=SC2059
         message=$(printf "$message_template" "$0")
+
+        echo "$message"
 
         exit 1
 
